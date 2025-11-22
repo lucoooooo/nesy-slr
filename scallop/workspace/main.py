@@ -9,6 +9,15 @@ import utils
 import json
 import argparse
 
+def saveJsonResults(filename, data):
+        try:
+            with open(data_dir+f"/{filename}.json", 'w') as f:
+                json.dump(data, f, indent=2)
+            print(f"Training results salvati correttamente")
+        except Exception as e:
+            print(f"Errore durante il salvataggio: {e}")
+
+
 def load_all_models(model_dir, models):
     pt_files = [f for f in os.listdir(model_dir) if f.endswith('.pt')]
     #device="cpu"
@@ -122,8 +131,12 @@ trainer_Sym_b0 = utils.Trainer_Sym(train_loader_b0, test_loader_b0, model_dir,le
 trainer_Sym_b3 = utils.Trainer_Sym(train_loader_b3, test_loader_b3, model_dir,learning_rate, b3_s, device)
 
 #training
+
 if no_train is True:
     load_all_models(model_dir, models)
+    with open(data_dir+"/training_results.json", "r", encoding="utf-8") as f:
+        training_results = json.load(f)
+
 else:
     print("Inizio training dei modelli")
     rb_train_s = trainer_Sym_basic.train(n_epochs)
@@ -132,6 +145,21 @@ else:
     rb0_train_s = trainer_Sym_b0.train(n_epochs)
     rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
     rb3_train_s = trainer_Sym_b3.train(n_epochs)
+    training_results = {
+        "MNISTNet_basic": {
+            "train_sym":  rb_train_s,
+            "train_nosym": rb_train_ns,
+        },
+        "EfficientNet-B0": {
+            "train_sym":  rb0_train_s,
+            "train_nosym": rb0_train_ns,
+        },
+        "EfficientNet-B3": {
+            "train_sym":  rb3_train_s,
+            "train_nosym": rb3_train_ns,
+        },
+    }   
+    saveJsonResults("training_results", training_results)
 
 
 #testing
@@ -143,8 +171,6 @@ rb0_test_s = trainer_Sym_b0.test()
 rb3_test_ns = trainer_NoSym_b3.test()
 rb3_test_s = trainer_Sym_b3.test()
 
-with open(data_dir+"/training_results.json", "r", encoding="utf-8") as f:
-    training_results = json.load(f)
 
 results = {
     "MNISTNet_basic": {
@@ -183,7 +209,7 @@ for model in rows:
     df.loc[model, "Train (NoSym)"] = fmt_cell(r["train_nosym"]["loss"], r["train_nosym"]["accuracy"])
     df.loc[model, "Test (NoSym)"] = fmt_cell(r["test_nosym"]["loss"], r["test_nosym"]["accuracy"])
 
-def save_table_image(df : pd.DataFrame, out_png="results.png", figsize=(12, 4.5), dpi=200, header_color="#f0f0f0"):
+def save_table_image(df : pd.DataFrame, out_png="./data/results.png", figsize=(12, 4.5), dpi=200, header_color="#f0f0f0"):
     fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
     ax.axis('off')
 
@@ -207,4 +233,4 @@ def save_table_image(df : pd.DataFrame, out_png="results.png", figsize=(12, 4.5)
     plt.savefig(out_png, bbox_inches="tight", pad_inches = 0.5)
     plt.close(fig)
 
-save_table_image(df, "prova.png")
+save_table_image(df)

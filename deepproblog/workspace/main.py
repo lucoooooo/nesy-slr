@@ -4,11 +4,19 @@ from matplotlib.table import Table
 import pandas as pd
 import numpy as np, random
 import os
-from datetime import datetime
+import json
 import pandas as pd
 import utils 
 from json import dumps
 import argparse
+
+def saveJsonResults(filename, data):
+        try:
+            with open(data_dir+f"/{filename}.json", 'w') as f:
+                json.dump(data, f, indent=2)
+            print(f"Training results salvati correttamente")
+        except Exception as e:
+            print(f"Errore durante il salvataggio: {e}")
 
 def load_all_models(model_dir, models):
     pt_files = [f for f in os.listdir(model_dir) if f.endswith('.pt') or f.endswith('.pth')]
@@ -117,7 +125,7 @@ b3_s = utils.DeepProblogModel(b3_sym, device, model_dir, data_dir, dataset_sym["
 
 models = {"basic_nosym":b_ns, "basic_sym":b_s, 
         "b0_nosym":b0_ns, "b0_sym":b0_s, 
-        "b3_nosym":b3_ns, "b3_sym":None}
+        "b3_nosym":b3_ns, "b3_sym":b3_s}
 
 #trainer no sym
 trainer_NoSym_basic = utils.Trainer_NoSym(train_loader_b, test_loader_b, model_dir,learning_rate, b_ns, device)
@@ -128,6 +136,8 @@ trainer_NoSym_b3 = utils.Trainer_NoSym(train_loader_b3, test_loader_b3, model_di
 #training 
 if no_train is True:
     load_all_models(model_dir, models)
+    with open(data_dir+"/training_results.json", "r", encoding="utf-8") as f:
+        training_results = json.load(f)
 else:
     print("Inizio training dei modelli")
     b_s.train(n_epochs)
@@ -136,6 +146,18 @@ else:
     rb_train_ns = trainer_NoSym_basic.train(n_epochs)
     rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
     rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
+    training_results = {
+        "MNISTNet_basic": {
+            "train_nosym": rb_train_ns,
+        },
+        "EfficientNet-B0": {
+            "train_nosym": rb0_train_ns,
+        },
+        "EfficientNet-B3": {
+            "train_nosym": rb3_train_ns,
+        },
+    }   
+    saveJsonResults("training_results", training_results)
 
 
 
@@ -144,29 +166,29 @@ print("Inizio testing dei modelli")
 b_s.test()
 b0_s.test()
 b3_s.test()
-#rb_test_ns = trainer_NoSym_basic.test()
-#rb0_test_ns = trainer_NoSym_b0.test()
-#rb3_test_ns = trainer_NoSym_b3.test()
+rb_test_ns = trainer_NoSym_basic.test()
+rb0_test_ns = trainer_NoSym_b0.test()
+rb3_test_ns = trainer_NoSym_b3.test()
 
 results = {
     "MNISTNet_basic": {
-        "train_nosym": rb_train_ns,
+        "train_nosym": training_results["MNISTNet_basic"]["train_nosym"],
         "test_nosym": rb_test_ns,
     },
     "EfficientNet-B0": {
-        "train_nosym": rb0_train_ns,
+        "train_nosym": training_results["EfficientNet-B0"]["train_nosym"],
         "test_nosym": rb0_test_ns,
     },
     "EfficientNet-B3": {
-        "train_nosym": rb3_train_ns,
+        "train_nosym": training_results["EfficientNet-B3"]["train_nosym"],
         "test_nosym": rb3_test_ns,
     },
 }
 
-# salvataggio risultati
+# salvataggio risultati solo no sym dato che deep problog ha il suo processo di log
 
 rows = list(results.keys())
-cols = ["Train (Sym)", "Test (Sym)","Train (NoSym)", "Test (NoSym)"]
+cols = ["Train (NoSym)", "Test (NoSym)"]
 
 def fmt_cell(loss, acc):
     return f"{loss:.4f} / {acc*100:.2f}%"
