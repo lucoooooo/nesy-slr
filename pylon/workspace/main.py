@@ -1,19 +1,9 @@
 import torch
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader, Subset, TensorDataset 
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import ConfusionMatrixDisplay
-import torchvision
-import torchvision.transforms as transforms
-import torch.nn as nn
-from torchvision.datasets import ImageFolder
-import timm
 import matplotlib.pyplot as plt #
 from matplotlib.table import Table
 import pandas as pd
 import numpy as np, random, torch
-import sys
-import re
+import argparse
 import os
 from datetime import datetime
 import pandas as pd
@@ -35,14 +25,25 @@ def load_all_models(model_dir, models):
 
         models[key].load_state_dict(state)
 
+
+parser = argparse.ArgumentParser()
+
 # Parameters
-n_epochs = 5
-seed = 123
-batch_size_train = 32
-batch_size_test = 32
-learning_rate = 1e-3
-k = 3
-provenance = "difftopkproofs"
+parser.add_argument("--epochs", type=int, default=5)
+parser.add_argument("--batch_size_train", type=int, default=32)
+parser.add_argument("--batch_size_test", type=int, default=32)
+parser.add_argument("--lr", type=int, default=1e-3)
+parser.add_argument("--seed", type=int, default=123)
+parser.add_argument("--modeldir", type=str, default="./model/mnist_sum_2")
+parser.add_argument("--datadir", type=str, default="./data")
+parser.add_argument("--no_train", action="store_true")
+args = parser.parse_args()
+n_epochs = args.epochs
+no_train = args.no_train
+seed = args.seed
+batch_size_train = args.batch_size_train
+batch_size_test = args.batch_size_train
+learning_rate = args.lr
 
 if torch.cuda.is_available():
     device = torch.device("cuda:0")
@@ -54,8 +55,8 @@ torch.manual_seed(seed); torch.cuda.manual_seed_all(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-data_dir  = os.path.abspath("./data")
-model_dir = os.path.abspath("./model/mnist_sum_2")
+data_dir  = os.path.abspath(args.datadir)
+model_dir = os.path.abspath(args.modeldir)
 os.makedirs(model_dir, exist_ok=True)
 
 #DATASET uguale per tutti
@@ -96,55 +97,54 @@ b3_sym = utils.MNISTNet_b3()
 b3_nsym = utils.MNISTNet_b3()
 
 
-b_ns = utils.MNISTSum2Net(basic_nsym, provenance, k)
-b0_ns = utils.MNISTSum2Net(b0_nsym, provenance, k)
-b3_ns = utils.MNISTSum2Net(b3_nsym, provenance, k)
-b_s = utils.MNISTSum2Net(basic_sym, provenance, k)
-b0_s = utils.MNISTSum2Net(b0_sym, provenance, k)
-b3_s = utils.MNISTSum2Net(b3_sym, provenance, k)
-"""
+b_ns = utils.MNISTSum2Net(basic_nsym)
+b0_ns = utils.MNISTSum2Net(b0_nsym)
+b3_ns = utils.MNISTSum2Net(b3_nsym)
+b_s = utils.MNISTSum2Net(basic_sym)
+b0_s = utils.MNISTSum2Net(b0_sym)
+b3_s = utils.MNISTSum2Net(b3_sym)
+
 models = {"basic_nosym":b_ns, "basic_sym":b_s, 
         "b0_nosym":b0_ns, "b0_sym":b0_s, 
         "b3_nosym":b3_ns, "b3_sym":b3_s}
 
-load_all_models(model_dir, models)
-"""
+
 #trainer no sym
 trainer_NoSym_basic = utils.Trainer_NoSym(train_loader_b, test_loader_b,model_dir, learning_rate, b_ns, device)
-#trainer_NoSym_b0 = utils.Trainer_NoSym(train_loader_b0, test_loader_b0, model_dir,learning_rate, b0_ns , device)
-#trainer_NoSym_b3 = utils.Trainer_NoSym(train_loader_b3, test_loader_b3, model_dir,learning_rate, b3_ns , device)
+trainer_NoSym_b0 = utils.Trainer_NoSym(train_loader_b0, test_loader_b0, model_dir,learning_rate, b0_ns , device)
+trainer_NoSym_b3 = utils.Trainer_NoSym(train_loader_b3, test_loader_b3, model_dir,learning_rate, b3_ns , device)
 
 #trainer sym
 trainer_Sym_basic = utils.Trainer_Sym(train_loader_b, test_loader_b, model_dir, learning_rate, b_s, device)
-#trainer_Sym_b0 = utils.Trainer_Sym(train_loader_b0, test_loader_b0, model_dir,learning_rate, b0_s, device)
-#trainer_Sym_b3 = utils.Trainer_Sym(train_loader_b3, test_loader_b3, model_dir,learning_rate, b3_s, device)
+trainer_Sym_b0 = utils.Trainer_Sym(train_loader_b0, test_loader_b0, model_dir,learning_rate, b0_s, device)
+trainer_Sym_b3 = utils.Trainer_Sym(train_loader_b3, test_loader_b3, model_dir,learning_rate, b3_s, device)
 
-#training
-print("Inizio training dei modelli")
+if no_train is True:
+    load_all_models(model_dir, models)
+else:
+    print("Inizio training dei modelli")
+    rb_train_s = trainer_Sym_basic.train(n_epochs)
+    rb_train_ns = trainer_NoSym_basic.train(n_epochs)
+    rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
+    rb0_train_s = trainer_Sym_b0.train(n_epochs)
+    rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
+    rb3_train_s = trainer_Sym_b3.train(n_epochs)
 
-rb_train_s = trainer_Sym_basic.train(n_epochs)
-rb_train_ns = trainer_NoSym_basic.train(n_epochs)
-"""
-rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
-rb0_train_s = trainer_Sym_b0.train(n_epochs)
-rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
-rb3_train_s = trainer_Sym_b3.train(n_epochs)
-"""
 #testing
 print("Inizio testing dei modelli")
 rb_test_ns = trainer_NoSym_basic.test()
 rb_test_s = trainer_Sym_basic.test()
-"""
+
 rb0_test_ns = trainer_NoSym_b0.test()
 rb0_test_s = trainer_Sym_b0.test()
 rb3_test_ns = trainer_NoSym_b3.test()
 rb3_test_s = trainer_Sym_b3.test()
-"""
+
 print(f"Train results without sym: {rb_train_ns} \n")
 print(f"Test results without sym: {rb_test_ns} \n")
 print(f"Train results with sym: {rb_train_s} \n")
 print(f"Test results with sym: {rb_test_s} \n")
-"""
+
 results = {
     "MNISTNet_basic": {
         "train_sym":  rb_train_s,
@@ -207,4 +207,3 @@ def save_table_image(df : pd.DataFrame, out_png="results.png", figsize=(12, 4.5)
     plt.close(fig)
 
 save_table_image(df)
-"""
