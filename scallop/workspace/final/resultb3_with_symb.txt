@@ -1,4 +1,0 @@
-==================================================
-2025-11-11 19:20:49.131269 TEST RESULTS
- TRAINING Min Loss: 0.0273 | Max Accuracy: 0.9917
- TESTING Loss: 0.0249 | Accuracy: 0.9916
