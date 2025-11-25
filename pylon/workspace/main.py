@@ -10,6 +10,8 @@ from datetime import datetime
 import pandas as pd
 import utils 
 
+#qui ho fatto fare a basic 15 epoche di training per abbassare un po il valore di loss di basic_sym (che di base è più alta data la regolarizzazione con lamda pylon) e quindi le ho messe a confronto con lo stesso numero di epoche
+
 def saveJsonResults(filename, data):
         try:
             with open(data_dir+f"/{filename}.json", 'w') as f:
@@ -42,7 +44,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--epochs", type=int, default=5)
 parser.add_argument("--batch_size_train", type=int, default=32)
 parser.add_argument("--batch_size_test", type=int, default=32)
-parser.add_argument("--lr", type=int, default=1e-3)
+parser.add_argument("--lr", type=float, default=1e-3)
 parser.add_argument("--seed", type=int, default=123)
 parser.add_argument("--modeldir", type=str, default="./model/mnist_sum_2")
 parser.add_argument("--datadir", type=str, default="./data")
@@ -135,12 +137,13 @@ if no_train is True:
 
 else:
     print("Inizio training dei modelli")
-    rb_train_s = trainer_Sym_basic.train(n_epochs)
-    rb_train_ns = trainer_NoSym_basic.train(n_epochs)
-    rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
-    rb0_train_s = trainer_Sym_b0.train(n_epochs)
-    rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
-    rb3_train_s = trainer_Sym_b3.train(n_epochs)
+    #rb_train_s = trainer_Sym_basic.train(n_epochs)
+    #rb_train_ns = trainer_NoSym_basic.train(n_epochs)
+    #rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
+    #rb0_train_s = trainer_Sym_b0.train(n_epochs)
+    #rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
+    #rb3_train_s = trainer_Sym_b3.train(n_epochs)
+    print(rb_train_ns)
     training_results = {
         "MNISTNet_basic": {
             "train_sym":  rb_train_s,

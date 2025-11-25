@@ -1,0 +1,35 @@
+{
+  "MNISTNet_basic": {
+    "train_sym": {
+      "loss": 0.3425,
+      "accuracy": 0.94753,
+      "sat": 0.6575
+    },
+    "train_nosym": {
+      "loss": 0.1653,
+      "accuracy": 0.9568
+    }
+  },
+  "EfficientNet-B0": {
+    "train_sym": {
+      "loss": 0.3125,
+      "accuracy": 0.9708,
+      "sat": 0.6875
+    },
+    "train_nosym": {
+      "loss": 0.0470,
+      "accuracy": 0.9859
+    }
+  },
+  "EfficientNet-B3": {
+    "train_sym": {
+      "loss": 0.3239,
+      "accuracy": 0.9629,
+      "sat": 0.6761
+    },
+    "train_nosym": {
+      "loss": 0.0421,
+      "accuracy": 0.9884
+    }
+  }
+}

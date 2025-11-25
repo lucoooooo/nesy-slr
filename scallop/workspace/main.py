@@ -41,7 +41,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--epochs", type=int, default=5)
 parser.add_argument("--batch_size_train", type=int, default=32)
 parser.add_argument("--batch_size_test", type=int, default=32)
-parser.add_argument("--lr", type=int, default=1e-3)
+parser.add_argument("--lr", type=float, default=1e-3)
 parser.add_argument("--seed", type=int, default=123)
 parser.add_argument("--modeldir", type=str, default="./model/mnist_sum_2")
 parser.add_argument("--datadir", type=str, default="./data")
@@ -92,11 +92,11 @@ train_loader_b, test_loader_b = utils.mnist_sum_2_loader(
     train_dataset=train_dataset, test_dataset=test_dataset
 )
 train_loader_b0, test_loader_b0 = utils.mnist_sum_2_loader(
-    data_dir, 8, 8, "mnistb0",
+    data_dir, batch_size_train, batch_size_test, "mnistb0",
     train_dataset=train_dataset, test_dataset=test_dataset
 )
 train_loader_b3, test_loader_b3 = utils.mnist_sum_2_loader(
-    data_dir, 8, 8, "mnistb3",
+    data_dir, batch_size_train, batch_size_test, "mnistb3",
     train_dataset=train_dataset, test_dataset=test_dataset
 )
 

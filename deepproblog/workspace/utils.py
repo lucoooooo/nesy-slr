@@ -235,33 +235,32 @@ class MNISTNet(nn.Module, ABC):
         pass
 
 class MNISTNet_basic(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes=10):
         super(MNISTNet_basic, self).__init__()
         self.modelname = "basic"
-        self.conv1 = nn.Conv2d(1, 32, kernel_size=5)
-        self.bn1 = nn.BatchNorm2d(32)  
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=5)
-        self.bn2 = nn.BatchNorm2d(64)  
-        self.fc1 = nn.Linear(1024, 1024)
-        self.bn3 = nn.BatchNorm1d(1024)
-        self.fc2 = nn.Linear(1024, 10)
+        self.conv1 = nn.Conv2d(1, 6, kernel_size=5)
+        self.conv2 = nn.Conv2d(6, 16, kernel_size=5)
+        self.fc1 = nn.Linear(256, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, num_classes)
+        self.dropout = nn.Dropout(p=0.5)
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.bn1(x)
+        x = F.relu(x)       
         x = F.max_pool2d(x, 2)
-        #x = F.relu(x)
         x = self.conv2(x)
-        x = self.bn2(x)
+        x = F.relu(x)    
         x = F.max_pool2d(x, 2)
-        #x = F.relu(x)
-        x = x.view(-1, 1024)
+        x = x.view(x.size(0), -1)
         x = self.fc1(x)
-        x = self.bn3(x) 
         x = F.relu(x)
-        x = F.dropout(x, p=0.5, training=self.training)
+        x = self.dropout(x)
         x = self.fc2(x)
-        return F.softmax(x,dim=1) 
+        x = F.relu(x)
+        x = self.dropout(x)
+        x = self.fc3(x)
+        return F.softmax(x, dim=1)
 
 
 class MNISTNet_b0(MNISTNet):
@@ -303,6 +302,7 @@ class MNISTSum2Net(nn.Module):
         b_distrs = self.mnist_net(b_imgs) 
 
         return (a_distrs, b_distrs) 
+
     
 def conv_sum(d1, d2):  
     B = d1.size(0)
@@ -335,7 +335,7 @@ class Trainer_NoSym:
                 d1,d2 = d1.to(self.device), d2.to(self.device)
                 target = target.to(self.device)
                 (dprob1, dprob2) = self.network((d1,d2))
-                output = conv_sum(F.softmax(dprob1, dim=1), F.softmax(dprob2, dim=1))
+                output = conv_sum(dprob1, dprob2)
                 loss = self.loss(torch.log(output + 1e-9), target.long())
                 loss.backward()
                 self.optimizer.step()
@@ -375,7 +375,7 @@ class Trainer_NoSym:
                 d1,d2 = d1.to(self.device), d2.to(self.device)
                 target = target.to(self.device)
                 (dprob1, dprob2) = self.network((d1,d2))
-                output = conv_sum(F.softmax(dprob1, dim=1), F.softmax(dprob2, dim=1))
+                output = conv_sum(dprob1, dprob2)
                 running_loss += self.loss(torch.log(output + 1e-9), target.long()).item() * target.size(0)
                 preds = output.argmax(dim=1)
                 y_true.extend(target.cpu().tolist())
@@ -448,4 +448,4 @@ class DeepProblogModel:
 
     def saveResults(self,train = False):
         phase = "train" if train else "test"
-        self.train_object.logger.write_to_file(self.data_dir+f"/{self.net.network_module.modelname}_{phase}_sym")
+        self.train_object.logger.write_to_file(self.datadir+f"/{self.net.network_module.modelname}_{phase}_sym")

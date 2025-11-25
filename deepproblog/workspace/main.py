@@ -33,6 +33,7 @@ def load_all_models(model_dir, models):
         if is_sym:
             models[key].load_state_dict(path, device)
         else:
+            print(path)
             state = torch.load(path, map_location=device)
             models[key].load_state_dict(state)
 
@@ -42,7 +43,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--epochs", type=int, default=5)
 parser.add_argument("--batch_size_train", type=int, default=32)
 parser.add_argument("--batch_size_test", type=int, default=32)
-parser.add_argument("--lr", type=int, default=1e-3)
+parser.add_argument("--lr", type=float, default=1e-3)
 parser.add_argument("--seed", type=int, default=123)
 parser.add_argument("--modeldir", type=str, default="./model/mnist_sum_2")
 parser.add_argument("--datadir", type=str, default="./data")
@@ -119,9 +120,9 @@ b3_ns = utils.MNISTSum2Net(b3_nsym)
 
 #mnist sum net with sym
 
-b_s = utils.DeepProblogModel(basic_sym, device, model_dir, data_dir, dataset_sym["basic"]["trainset"], dataset_sym["basic"]["testset"], batch_size_train, learning_rate, seed, cache=True)
-b0_s = utils.DeepProblogModel(b0_sym, device, model_dir, data_dir, dataset_sym["b0"]["trainset"], dataset_sym["b0"]["testset"], batch_size_train, learning_rate, seed, cache=True)
-b3_s = utils.DeepProblogModel(b3_sym, device, model_dir, data_dir, dataset_sym["b3"]["trainset"], dataset_sym["b3"]["testset"], batch_size_train, learning_rate, seed, cache=True)
+b_s = utils.DeepProblogModel(basic_sym,  model_dir, data_dir, device,dataset_sym["basic"]["trainset"], dataset_sym["basic"]["testset"], batch_size_train, learning_rate, seed, cache=True)
+b0_s = utils.DeepProblogModel(b0_sym, model_dir, data_dir, device, dataset_sym["b0"]["trainset"], dataset_sym["b0"]["testset"], batch_size_train, learning_rate, seed, cache=True)
+b3_s = utils.DeepProblogModel(b3_sym,  model_dir, data_dir, device,dataset_sym["b3"]["trainset"], dataset_sym["b3"]["testset"], batch_size_train, learning_rate, seed, cache=True)
 
 models = {"basic_nosym":b_ns, "basic_sym":b_s, 
         "b0_nosym":b0_ns, "b0_sym":b0_s, 
@@ -158,14 +159,15 @@ else:
         },
     }   
     saveJsonResults("training_results", training_results)
+    
 
 
 
 #testing
 print("Inizio testing dei modelli")
-b_s.test()
-b0_s.test()
-b3_s.test()
+#b_s.test()
+#b0_s.test()
+#b3_s.test()
 rb_test_ns = trainer_NoSym_basic.test()
 rb0_test_ns = trainer_NoSym_b0.test()
 rb3_test_ns = trainer_NoSym_b3.test()

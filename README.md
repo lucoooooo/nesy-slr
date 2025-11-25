@@ -1,3 +1,2 @@
 # thesis
-AGGIORNARE FILE PT E RISULTATI DI TRAINING
-AGGIUSTARE SALVATAGGIO RISULTATI: fatto (da ricontrollare)
+(dopo incontro prof) eventualmente aggiungi accuracy cifra singola
