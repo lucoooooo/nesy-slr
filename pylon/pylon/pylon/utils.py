@@ -15,7 +15,7 @@ def decoding_loss(values, log_probs):
         # sum of log probabilities of the value
         # assumed by each random variable in the
         # decoding.
-
+        value = value.to(log_prob.device)
         # Shape of loss: batch_size x ...
         loss += log_prob.gather(-1, value.unsqueeze(-1))\
                 .squeeze(-1).view(bsz, -1).sum(-1)

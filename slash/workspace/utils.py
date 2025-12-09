@@ -1,0 +1,419 @@
+import os
+import random
+from typing import *
+import matplotlib.pyplot as plt
+import torch
+import torchvision
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from tqdm import tqdm
+import timm
+from sklearn.metrics import accuracy_score
+from abc import ABC, abstractmethod
+from slash import SLASH
+import time
+
+def time_delta_now(t_start: float, simple_format=False) -> str:
+    a = t_start
+    b = time.time() 
+    c = b - a  
+    days = round(c // 86400)
+    hours = round(c // 3600 % 24)
+    minutes = round(c // 60 % 60)
+    seconds = round(c % 60)
+    millisecs = round(c % 1 * 1000)
+    if simple_format:
+        return f"{hours}h:{minutes}m:{seconds}s"
+
+    return f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds, {millisecs} milliseconds", c
+
+
+
+mnistbasic_img_transform = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize(
+    (0.1307,), (0.3081,)
+    )
+])
+mnistb0_img_transform = torchvision.transforms.Compose([
+    torchvision.transforms.Grayscale(num_output_channels=3),
+    torchvision.transforms.Resize(64, interpolation=torchvision.transforms.InterpolationMode.BICUBIC, antialias=True),
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize(mean=(0.1307,)*3,
+                        std=(0.3081,)*3),
+])
+
+mnistb3_img_transform = mnistb0_img_transform
+
+
+
+class MNISTSum2Dataset(torch.utils.data.Dataset):
+    def __init__(
+        self,
+        root: str,
+        train: bool = True,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+        seed : int = None
+    ):
+        # Contains a MNIST dataset
+        self.mnist_dataset = torchvision.datasets.MNIST(
+        root,
+        train=train,
+        transform=transform,
+        target_transform=target_transform,
+        download=download,
+        )
+        self.seed=seed
+        self.index_map = list(range(len(self.mnist_dataset)))
+        if seed is not None:
+            rng = random.Random(seed)
+            rng.shuffle(self.index_map)
+        else:
+            random.shuffle(self.index_map)
+
+    def __len__(self):
+        return int(len(self.mnist_dataset) / 2)
+
+    def __getitem__(self, idx):
+        (a_img, a_digit) = self.mnist_dataset[self.index_map[idx * 2]]
+        (b_img, b_digit) = self.mnist_dataset[self.index_map[idx * 2 + 1]]
+
+        return (a_img, b_img, a_digit + b_digit)
+
+    @staticmethod
+    def collate_fn(batch):
+        a_imgs = torch.stack([item[0] for item in batch])
+        b_imgs = torch.stack([item[1] for item in batch])
+        digits = torch.stack([torch.tensor(item[2]).long() for item in batch])
+        return ((a_imgs, b_imgs), digits)
+
+
+class MNISTSum2SLASH(torch.utils.data.Dataset):
+    def __init__(
+        self,
+        root: str,
+        train: bool = True,
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
+        download: bool = False,
+        seed : int = None
+    ):
+        self.dataset_name = "train" if train else "test"
+        self.seed = seed
+        self.mnist_dataset = torchvision.datasets.MNIST(
+        root,
+        train=train,
+        transform=transform,
+        target_transform=target_transform,
+        download=download,
+        )
+        self.index_map = list(range(len(self.mnist_dataset)))
+        if seed is not None:
+            rng = random.Random(seed)
+            rng.shuffle(self.index_map)
+        else:
+            random.shuffle(self.index_map)
+
+    def __len__(self):
+        return int(len(self.index_map) / 2)
+    
+    def __getitem__(self, idx):
+        (a_img, a_digit) = self.mnist_dataset[self.index_map[idx * 2]]
+        (b_img, b_digit) = self.mnist_dataset[self.index_map[idx * 2 + 1]]
+        query = f":- not addition(i1, i2,{a_digit+b_digit})."
+        return {'i1': a_img, 'i2': b_img}, query
+        
+def clone_with_transform(base_ds: MNISTSum2Dataset, data_dir, train_flag: bool, transform, sym=False):
+        if not sym:
+            ds = MNISTSum2Dataset(
+                data_dir, train=train_flag, download=True, transform=transform, seed = base_ds.seed
+            )
+        else:
+            ds = MNISTSum2SLASH(data_dir, train=train_flag, download=True, transform=transform, seed = base_ds.seed)
+        ds.index_map = list(base_ds.index_map)
+        return ds
+
+def mnist_sum_2_loader(
+    data_dir,
+    batch_size_train,
+    batch_size_test,
+    modeltype: str,
+    train_dataset: MNISTSum2Dataset,
+    test_dataset: MNISTSum2Dataset,
+):
+    if modeltype == "mnistb0":
+        mnist_img_transform = mnistb0_img_transform
+    elif modeltype == "mnistb3":
+        mnist_img_transform = mnistb3_img_transform
+    else:
+        mnist_img_transform = mnistbasic_img_transform
+
+
+    train_ds_ns = clone_with_transform(train_dataset, data_dir,True, mnist_img_transform)
+
+    test_ds_ns= clone_with_transform(test_dataset, data_dir,False, mnist_img_transform)
+    
+    train_ds_s = clone_with_transform(train_dataset, data_dir,True, mnist_img_transform, True)
+
+
+    train_loader_ns = torch.utils.data.DataLoader(
+        train_ds_ns,
+        collate_fn=MNISTSum2Dataset.collate_fn,
+        batch_size=batch_size_train,
+        shuffle=True
+    )
+    test_loader_ns = torch.utils.data.DataLoader(
+        test_ds_ns,
+        collate_fn=MNISTSum2Dataset.collate_fn,
+        batch_size=batch_size_test,
+        shuffle=False
+    )
+    train_loader_s = torch.utils.data.DataLoader(
+        train_ds_s,
+        batch_size=batch_size_train,
+        shuffle=True
+    )
+    return train_loader_ns, test_loader_ns, train_loader_s
+
+class MNISTNet(nn.Module, ABC):
+    def __init__(self):
+        super(MNISTNet, self).__init__()
+
+    @abstractmethod
+    def forward(self, x):
+        pass
+
+class MNISTNet_basic(MNISTNet):
+    def __init__(self, num_classes=10):
+        super(MNISTNet_basic, self).__init__()
+        self.modelname = "basic"
+        self.conv1 = nn.Conv2d(1, 6, kernel_size=5)
+        self.conv2 = nn.Conv2d(6, 16, kernel_size=5)
+        self.fc1 = nn.Linear(256, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, num_classes)
+        self.dropout = nn.Dropout(p=0.5)
+
+    def forward(self, x, **kwargs):
+        x = self.conv1(x)
+        x = F.relu(x)       
+        x = F.max_pool2d(x, 2)
+        x = self.conv2(x)
+        x = F.relu(x)    
+        x = F.max_pool2d(x, 2)
+        x = x.view(x.size(0), -1)
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.dropout(x)
+        x = self.fc2(x)
+        x = F.relu(x)
+        x = self.dropout(x)
+        x = self.fc3(x)
+        return F.softmax(x,dim=1)
+    
+class MNISTNet_b0(MNISTNet):
+    def __init__(self, N=10):
+        super(MNISTNet_b0, self).__init__()
+        self.model = timm.create_model('efficientnet_b0', pretrained=True, num_classes=0)
+        self.modelname = "b0"
+        self.classifier = nn.Linear(self.model.num_features, N)
+
+    def forward(self, x,**kwargs):   
+        x = self.model(x) #estrae feature
+        x = self.classifier(x) #fa classificazione
+        return F.softmax(x,dim=1)
+
+class MNISTNet_b3(MNISTNet):
+    def __init__(self, N=10):
+        super(MNISTNet_b3, self).__init__()
+        self.model = timm.create_model('efficientnet_b3', pretrained=True, num_classes=0)
+        self.modelname = "b3"
+        self.classifier = nn.Linear(self.model.num_features, N)
+
+    def forward(self, x, **kwargs):   
+        x = self.model(x) #estrae feature
+        x = self.classifier(x) #fa classificazione
+        return F.softmax(x,dim=1)
+    
+class MNISTSum2Net(nn.Module):
+    def __init__(self, model):
+        super(MNISTSum2Net, self).__init__()
+        self.mnist_net = model
+
+    def forward(self, x: Tuple[torch.Tensor, torch.Tensor]):
+        (a_imgs, b_imgs) = x
+
+        # First recognize the two digits
+        a_distrs = F.softmax(self.mnist_net(a_imgs), dim=1)
+        b_distrs = F.softmax(self.mnist_net(b_imgs), dim=1) 
+
+        return (a_distrs, b_distrs) 
+
+def conv_sum(d1, d2):  
+    B = d1.size(0)
+    x = d1.unsqueeze(0)                     
+    w = d2.unsqueeze(1).flip(2)             
+    y = nn.functional.conv1d(x, w, groups=B, padding=9)  
+    p_sum = y.squeeze(0)[:, :19]             
+    p_sum = p_sum / (p_sum.sum(dim=1, keepdim=True) + 1e-12)
+    return p_sum
+
+class Trainer_Sym():
+    def __init__(self, train_loader_sum, test_loader, model_dir, learning_rate, model : MNISTNet, method, p_num, k, device):
+        self.model_dir = model_dir
+        self.network = model
+        self.device = device
+        self.train_loader_sum = train_loader_sum
+        self.train_loader_mnist = torch.utils.data.DataLoader(train_loader_sum.dataset.mnist_dataset, batch_size=100, shuffle=True)
+        self.test_loader = test_loader
+        self.loss = nn.NLLLoss()
+        self.method = method
+        self.p_num = p_num
+        self.k = k
+        sum_program = '''
+            img(i1). img(i2).
+            npp(digit(1,X), [0,1,2,3,4,5,6,7,8,9]) :- img(X).
+            addition(A,B,S) :- digit(0,+A, -N1), digit(0,+B, -N2), S = N1 + N2.
+        '''
+        nnMap = {'digit' : self.network}
+        optimizer = {'digit' : optim.Adam(self.network.parameters(), lr=learning_rate, eps=1e-7)}
+        self.nesy = SLASH(sum_program, nnMap, optimizer) 
+
+    def train(self, num_epoch): 
+        train_losses, acc_train = [], []
+        forward_times, asp_times = [], [] # tempo impiegato per processare i dati in input e produrre le probabilità grezze , tempo del solver logico per trovare sol compatibili
+        backward_times, sm_per_batch_list = [], [] #tempo necessario per calcolare i gradienti e fare backprop , quanti modelli stabili ha generato il solver per un'epoca
+        train_times = []
+        for epoch in range(num_epoch):
+            time_train = time.time()
+            loss, forward_time, asp_time, gradient_time, backward_time, sm_per_batch  = self.nesy.learn(dataset_loader = self.train_loader_sum,
+                        epoch=epoch, method=self.method, p_num=self.p_num, k_num = self.k)
+            train_acc,_ = self.nesy.testNetwork('digit',self.train_loader_mnist)
+            timestamp_train = time_delta_now(time_train, simple_format=True)
+            forward_times.append(forward_time)
+            asp_times.append(asp_time)
+            backward_times.append(backward_time)
+            sm_per_batch_list.append(sm_per_batch)
+            train_losses.append(loss)
+            acc_train.append(train_acc)
+            train_times.append(timestamp_train)
+            #stats
+            print(f"Epoca {epoch+1}/{num_epoch} - Train loss: {loss} with accuracy: {train_acc*100}% in time: {timestamp_train}")
+        
+        plt.plot(train_losses, label='Training loss')
+        plt.legend()
+        plt.title("Loss over epochs")
+        plt.show()
+        plt.plot(acc_train, label='Accuracy in training')
+        plt.legend()
+        plt.title("Accuracy over epochs")
+        plt.show()
+        torch.save(self.network.state_dict(), os.path.join(self.model_dir, f"{self.network.modelname}_sym.pt"))
+        return {
+            "loss": min(train_losses),
+            "accuracy" : max(acc_train)
+        }
+        
+
+    def test(self):
+        self.network.eval()
+        y_true, y_pred = [], []
+        running_loss = 0.0
+        self.network.to(self.device)
+        with torch.no_grad():
+            for ((d1,d2), target) in tqdm(self.test_loader, total=len(self.test_loader), desc='Test Loop'):
+                d1,d2 = d1.to(self.device), d2.to(self.device)
+                target = target.to(self.device)
+                dprob1 = self.network(d1)
+                dprob2 = self.network(d2)
+                output = conv_sum(dprob1, dprob2)
+                running_loss += self.loss(torch.log(output + 1e-9), target.long()).item() * target.size(0)
+                preds = output.argmax(dim=1)
+                y_true.extend(target.cpu().tolist())
+                y_pred.extend(preds.detach().cpu().tolist())
+
+        test_loss = running_loss / len(self.test_loader.dataset)
+        acc = accuracy_score(y_true, y_pred)
+        return {
+            "loss": test_loss,
+            "accuracy" : acc
+        }
+    
+class Trainer_NoSym:
+    def __init__(self, train_loader, test_loader, model_dir, learning_rate, model : MNISTSum2Net, device):
+        self.model_dir = model_dir
+        self.network = model
+        self.optimizer = optim.Adam(self.network.parameters(), lr=learning_rate)
+        self.train_loader = train_loader
+        self.test_loader = test_loader
+        self.loss = nn.NLLLoss()
+        self.device = device
+        self.network.to(device)
+
+    def train(self, num_epoch):
+        train_losses, acc_train = [], []
+        for epoch in range(num_epoch):
+            y_true, y_pred = [], []
+            running_loss = 0.0
+            self.network.train()
+            for ((d1,d2), target) in tqdm(self.train_loader, total=len(self.train_loader), desc='Train Loop'):
+                self.optimizer.zero_grad()
+                d1,d2 = d1.to(self.device), d2.to(self.device)
+                target = target.to(self.device)
+                (dprob1, dprob2) = self.network((d1,d2))
+                output = conv_sum(dprob1, dprob2)
+                loss = self.loss(torch.log(output + 1e-9), target.long())
+                loss.backward()
+                self.optimizer.step()
+                running_loss += loss.item() * target.size(0) 
+                preds = output.argmax(dim=1)
+                y_true.extend(target.cpu().tolist())
+                y_pred.extend(preds.detach().cpu().tolist())
+            
+            train_loss = running_loss / len(self.train_loader.dataset)
+            train_losses.append(train_loss)
+            running_train_accuracy = accuracy_score(y_true, y_pred)
+            acc_train.append(running_train_accuracy)
+            
+            #stats
+            print(f"Epoca {epoch+1}/{num_epoch} - Train loss: {train_loss} with accuracy: {running_train_accuracy*100}%")
+        
+        plt.plot(train_losses, label='Training loss')
+        plt.legend()
+        plt.title("Loss over epochs")
+        plt.show()
+        plt.plot(acc_train, label='Accuracy in training')
+        plt.legend()
+        plt.title("Accuracy over epochs")
+        plt.show()
+        torch.save(self.network.state_dict(), os.path.join(self.model_dir, f"{self.network.mnist_net.modelname}_nosym.pt"))
+        return {
+            "loss": min(train_losses),
+            "accuracy" : max(acc_train),
+        }
+    
+    def test(self):
+        self.network.eval()
+        y_true, y_pred = [], []
+        running_loss = 0.0
+        with torch.no_grad():
+            for ((d1,d2), target) in tqdm(self.test_loader, total=len(self.test_loader), desc='Test Loop'):
+                d1,d2 = d1.to(self.device), d2.to(self.device)
+                target = target.to(self.device)
+                (dprob1, dprob2) = self.network((d1,d2))
+                output = conv_sum(dprob1, dprob2)
+                running_loss += self.loss(torch.log(output + 1e-9), target.long()).item() * target.size(0)
+                preds = output.argmax(dim=1)
+                y_true.extend(target.cpu().tolist())
+                y_pred.extend(preds.detach().cpu().tolist())
+
+        test_loss = running_loss / len(self.test_loader.dataset)
+        acc = accuracy_score(y_true, y_pred)
+        #cm = confusion_matrix(y_true, y_pred)
+        return {
+            "loss": test_loss,
+            "accuracy" : acc,
+        }

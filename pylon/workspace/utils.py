@@ -175,7 +175,10 @@ class MNISTSum2Net(nn.Module):
         return (a_distrs, b_distrs) 
 
 def enforce_sum(img1, img2, **kwargs):
-    return img1 + img2 == kwargs['summation']
+    target = kwargs['summation']
+    img1 = img1.to(target.device)
+    img2 = img2.to(target.device)
+    return img1 + img2 == target
 
 class Trainer_Sym():
     def __init__(self, train_loader, test_loader, model_dir, learning_rate, model : MNISTSum2Net, device, lambda_pylon=0.4, lambda_nn=1):
