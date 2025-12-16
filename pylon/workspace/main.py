@@ -53,11 +53,11 @@ def load_all_models(model_dir, models):
         path = model_dir + "/" + f
         state = torch.load(path, map_location=device)
         filename = f.lower()
-        is_sym = 0 if "nosym" in filename else 1
+        is_sym = 0 if "neural" in filename else 1
 
-        if "b0" in filename: key = "b0_sym" if is_sym else "b0_nosym"
-        elif "b3" in filename: key = "b3_sym" if is_sym else "b3_nosym"
-        elif "basic" in filename: key = "basic_sym" if is_sym else "basic_nosym"
+        if "b0" in filename: key = "b0_nesy" if is_sym else "b0_neural"
+        elif "b3" in filename: key = "b3_nesy" if is_sym else "b3_neural"
+        elif "basic" in filename: key = "basic_nesy" if is_sym else "basic_neural"
         else: raise KeyError(f"Nessun modello per il file '{f}' (chiave inferita: {key}).")
 
         models[key].load_state_dict(state)
@@ -96,7 +96,6 @@ data_dir  = os.path.abspath(args.datadir)
 model_dir = os.path.abspath(args.modeldir)
 os.makedirs(model_dir, exist_ok=True)
 os.makedirs(data_dir, exist_ok=True)
-os.makedirs(model_dir, exist_ok=True)
 os.makedirs(os.path.join(data_dir,"basic"),exist_ok=True)
 os.makedirs(os.path.join(data_dir,"b0"), exist_ok=True)
 os.makedirs(os.path.join(data_dir,"b3"), exist_ok=True)
@@ -145,9 +144,9 @@ b_s = utils.MNISTSum2Net_Sym(basic_sym)
 b0_s = utils.MNISTSum2Net_Sym(b0_sym)
 b3_s = utils.MNISTSum2Net_Sym(b3_sym)
 
-models = {"basic_nosym":b_ns, "basic_sym":b_s, 
-        "b0_nosym":b0_ns, "b0_sym":b0_s, 
-        "b3_nosym":b3_ns, "b3_sym":b3_s}
+models = {"basic_neural":b_ns, "basic_nesy":b_s, 
+        "b0_neural":b0_ns, "b0_nesy":b0_s, 
+        "b3_neural":b3_ns, "b3_nesy":b3_s}
 
 
 #trainer no sym
