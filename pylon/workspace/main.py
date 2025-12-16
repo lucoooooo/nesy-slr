@@ -46,7 +46,7 @@ def saveJsonResults(filename, data):
             print(f"Errore durante il salvataggio: {e}")
 
 
-def load_all_models(model_dir, models):
+def load_all_models(model_dir, models, device):
     pt_files = [f for f in os.listdir(model_dir) if f.endswith('.pt')]
     #device="cpu"
     for f in pt_files:
@@ -159,7 +159,7 @@ trainer_Sym_basic = utils.Trainer_Sym(train_loader_b, test_loader_b, model_dir, 
 trainer_Sym_b0 = utils.Trainer_Sym(train_loader_b0, test_loader_b0, model_dir,learning_rate, b0_s, device)
 trainer_Sym_b3 = utils.Trainer_Sym(train_loader_b3, test_loader_b3, model_dir,learning_rate, b3_s, device)
 if no_train is True:
-    load_all_models(model_dir, models)
+    load_all_models(model_dir, models, device)
     with open(data_dir+"/training_results.json", "r", encoding="utf-8") as f:
         training_results = json.load(f)
 
@@ -167,25 +167,11 @@ else:
     print("Inizio training dei modelli")
     rb_train_s = trainer_Sym_basic.train(n_epochs)
     rb_train_ns = trainer_NoSym_basic.train(n_epochs)
-    compGraph({"nesy": rb_train_s["loss"], "neural": rb_train_ns["loss"]},
-            {"nesy": rb_train_s["accuracy"], "neural": rb_train_ns["accuracy"]},
-            "basic",
-            data_dir
-            )
     rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
     rb0_train_s = trainer_Sym_b0.train(n_epochs)
-    compGraph({"nesy": rb0_train_s["loss"], "neural": rb0_train_ns["loss"]},
-            {"nesy": rb0_train_s["accuracy"], "neural": rb0_train_ns["accuracy"]},
-            "b0",
-            data_dir
-            )
     rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
     rb3_train_s = trainer_Sym_b3.train(n_epochs)
-    compGraph({"nesy": rb3_train_s["loss"], "neural": rb3_train_ns["loss"]},
-            {"nesy": rb3_train_s["accuracy"], "neural": rb3_train_ns["accuracy"]},
-            "b3",
-            data_dir
-            )
+    
     training_results = {
         "MNISTNet_basic": {
             "train_nesy":  rb_train_s,
@@ -237,6 +223,7 @@ results = {
 # salvataggio risultati
 
 rows = list(results.keys())
+
 cols = ["Train (NeSy)", "Test (NeSy)","Train (Neural)", "Test (Neural)"]
 
 def fmt_cell(loss, acc, single_acc):
@@ -246,6 +233,19 @@ def fmt_cell(loss, acc, single_acc):
 df = pd.DataFrame(index=rows, columns=cols)
 for model in rows:
     r = results[model]
+
+    if "basic" in model:
+        modelname = "basic"
+    elif "B0" in model:
+        modelname = "b0"
+    else:
+        modelname = "b3"
+    compGraph({"nesy": r["train_nesy"]["loss"], "neural": r["train_neural"]["loss"]},
+            {"nesy": r["train_nesy"]["accuracy"], "neural": r["train_neural"]["accuracy"]},
+            modelname,
+            data_dir
+            )
+    
     df.loc[model, "Train (NeSy)"] = fmt_cell(min(r["train_nesy"]["loss"]), max(r["train_nesy"]["accuracy"]), r["train_nesy"]["single-digit accuracy"])
     df.loc[model, "Test (NeSy)"] = fmt_cell(r["test_nesy"]["loss"], r["test_nesy"]["accuracy"], r["test_nesy"]["single-digit accuracy"])
     df.loc[model, "Train (Neural)"] = fmt_cell(min(r["train_neural"]["loss"]), max(r["train_neural"]["accuracy"]), r["train_neural"]["single-digit accuracy"])

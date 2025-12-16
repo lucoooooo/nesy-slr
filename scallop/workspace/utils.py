@@ -256,7 +256,7 @@ class Trainer_Sym():
             acc_train.append(running_train_accuracy)
             
             #stats
-            print(f"Epoca {epoch+1}/{num_epoch} - Train loss: {train_loss} with total accuracy: {running_train_accuracy*100}% in {avg_inference_time}ms \n digit1 accuracy: {d1_accuracy*100} and digit2 accuracy: {d2_accuracy*100}")
+            print(f"Epoca {epoch+1}/{num_epoch} - {self.network.mnist_net.modelname} nesy model - Train loss: {train_loss} with total accuracy: {running_train_accuracy*100}% in {avg_inference_time}ms \n digit1 accuracy: {d1_accuracy*100} and digit2 accuracy: {d2_accuracy*100}")
         
         torch.save(self.network.state_dict(), os.path.join(self.model_dir, f"{self.network.mnist_net.modelname}_nesy.pt"))
         return {
@@ -298,8 +298,8 @@ class Trainer_Sym():
         acc = accuracy_score(y_true, y_pred)
         d1acc = accuracy_score(a_true, a_pred)
         d2acc = accuracy_score(b_true, b_pred)
-        avg_inference_time = (total_inference_time / len(self.train_loader.dataset)) * 1000
-        print(f"- Test loss: {test_loss} with total accuracy: {acc*100}% in {avg_inference_time}ms \n digit1 accuracy: {d1acc} and digit2 accuracy: {d2acc}")
+        avg_inference_time = (total_inference_time / len(self.test_loader.dataset)) * 1000
+        print(f"- {self.network.mnist_net.modelname} nesy model - Test loss: {test_loss} with total accuracy: {acc*100}% in {avg_inference_time}ms \n digit1 accuracy: {d1acc} and digit2 accuracy: {d2acc}")
         return {
             "loss": test_loss,
             "accuracy" : acc,
@@ -383,7 +383,7 @@ class Trainer_NoSym:
             acc_train.append(running_train_accuracy)
             
             #stats
-            print(f"Epoca {epoch+1}/{num_epoch} - Train loss: {train_loss} with total accuracy: {running_train_accuracy*100}% \n digit1 accuracy: {d1acc} and digit2 accuracy: {d2acc}")
+            print(f"Epoca {epoch+1}/{num_epoch} - {self.network.mnist_net.modelname} neural model - Train loss: {train_loss} with total accuracy: {running_train_accuracy*100}% \n digit1 accuracy: {d1acc} and digit2 accuracy: {d2acc}")
         
         torch.save(self.network.state_dict(), os.path.join(self.model_dir, f"{self.network.mnist_net.modelname}_neural.pt"))
         return {
@@ -422,7 +422,7 @@ class Trainer_NoSym:
         d2acc = accuracy_score(b_true,b_pred)
         
 
-        print(f"Test loss: {test_loss} with total accuracy: {acc*100}% \n digit1 accuracy: {d1acc} and digit2 accuracy: {d2acc}")
+        print(f"- {self.network.mnist_net.modelname} neural model - Test loss: {test_loss} with total accuracy: {acc*100}% \n digit1 accuracy: {d1acc} and digit2 accuracy: {d2acc}")
         return {
             "loss": test_loss,
             "accuracy" : acc,
