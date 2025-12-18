@@ -1,4 +1,5 @@
 import os
+from abc import ABC, abstractmethod
 import random
 from typing import *
 import matplotlib.pyplot as plt
@@ -9,6 +10,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from tqdm import tqdm
 import timm
+import time
 from sklearn.metrics import accuracy_score
 import ltn
 
@@ -54,19 +56,19 @@ class MNISTSum2Dataset(torch.utils.data.Dataset):
         return int(len(self.mnist_dataset) / 2)
 
     def __getitem__(self, idx):
-        # Get two data points
         (a_img, a_digit) = self.mnist_dataset[self.index_map[idx * 2]]
         (b_img, b_digit) = self.mnist_dataset[self.index_map[idx * 2 + 1]]
 
-        # Each data has two images and the GT is the sum of two digits
-        return (a_img, b_img, a_digit + b_digit)
+        return (a_img, b_img), (a_digit, b_digit)
 
     @staticmethod
     def collate_fn(batch):
-        a_imgs = torch.stack([item[0] for item in batch])
-        b_imgs = torch.stack([item[1] for item in batch])
-        digits = torch.stack([torch.tensor(item[2]).long() for item in batch])
-        return ((a_imgs, b_imgs), digits)
+        a_imgs = torch.stack([item[0][0] for item in batch])
+        b_imgs = torch.stack([item[0][1] for item in batch])
+        a_digits = torch.tensor([item[1][0] for item in batch])
+        b_digits = torch.tensor([item[1][1] for item in batch])
+        return ((a_imgs, b_imgs), (a_digits,b_digits))
+
 
 
 def mnist_sum_2_loader(
@@ -110,8 +112,15 @@ def mnist_sum_2_loader(
     )
     return train_loader, test_loader
 
+class MNISTNet(nn.Module, ABC):
+    def __init__(self):
+        super(MNISTNet, self).__init__()
 
-class MNISTNet_basic(nn.Module):
+    @abstractmethod
+    def forward(self, x):
+        pass
+
+class MNISTNet_basic(MNISTNet):
     def __init__(self, num_classes=10):
         super(MNISTNet_basic, self).__init__()
         self.modelname = "basic"
@@ -139,7 +148,7 @@ class MNISTNet_basic(nn.Module):
         x = self.fc3(x)
         return x
     
-class MNISTNet_b0(nn.Module):
+class MNISTNet_b0(MNISTNet):
     def __init__(self, N=10):
         super(MNISTNet_b0, self).__init__()
         self.model = timm.create_model('efficientnet_b0', pretrained=True, num_classes=0)
@@ -151,7 +160,7 @@ class MNISTNet_b0(nn.Module):
         x = self.classifier(x) #fa classificazione
         return x
 
-class MNISTNet_b3(nn.Module):
+class MNISTNet_b3(MNISTNet):
     def __init__(self, N=10):
         super(MNISTNet_b3, self).__init__()
         self.model = timm.create_model('efficientnet_b3', pretrained=True, num_classes=0)
@@ -167,20 +176,30 @@ class MNISTSum2Net(nn.Module):
     def __init__(self, model):
         super(MNISTSum2Net, self).__init__()
         self.mnist_net = model
+        self.feature_dim = 10
+
+        combined_dim = self.feature_dim * 2
+        self.sum_classifier = nn.Linear(combined_dim, 19)
 
     def forward(self, x: Tuple[torch.Tensor, torch.Tensor]):
         (a_imgs, b_imgs) = x
 
-        # First recognize the two digits
-        a_distrs = F.softmax(self.mnist_net(a_imgs), dim=1)
-        b_distrs = F.softmax(self.mnist_net(b_imgs), dim=1) 
+        a_feat = self.mnist_net(a_imgs)
+        b_feat = self.mnist_net(b_imgs)
+        
+        a_pred = (F.softmax(a_feat, dim=1)).argmax(dim=1)
+        b_pred = (F.softmax(b_feat, dim=1)).argmax(dim=1)
 
-        return (a_distrs, b_distrs) 
+        combined_feature = torch.cat((a_feat,b_feat), dim=1)
+
+        sumpred = F.softmax(self.sum_classifier(combined_feature), dim=1)
+
+        return sumpred, a_pred, b_pred
 
 class LogitsToPredicate(nn.Module):
-    def __init__(self, model : MNISTSum2Net):
+    def __init__(self, mnist_model: MNISTNet):
         super(LogitsToPredicate, self).__init__()
-        self.mnist_net = model.mnist_net
+        self.mnist_net = mnist_model
 
     def forward(self, x, d):
         d1 = self.mnist_net(x)
@@ -192,17 +211,19 @@ class LogitsToPredicate(nn.Module):
     def classify(self, x: Tuple[torch.Tensor, torch.Tensor]):
         return self.mnist_net(x[0]), self.mnist_net(x[1])
     
-def conv_sum(d1, d2):  
-    B = d1.size(0)
-    x = d1.unsqueeze(0)                     
-    w = d2.unsqueeze(1).flip(2)             
-    y = nn.functional.conv1d(x, w, groups=B, padding=9)  
-    p_sum = y.squeeze(0)[:, :19]             
-    p_sum = p_sum / (p_sum.sum(dim=1, keepdim=True) + 1e-12)
-    return p_sum
+
+def computePrediction(data, net):
+    d1,d2 = data
+    d1prob = F.softmax(net(d1), dim=1)
+    d2prob = F.softmax(net(d2), dim=1)
+    d1pred = d1prob.argmax(dim=1)
+    d2pred = d2prob.argmax(dim=1)
+    sum_pred = d1pred + d2pred
+    return sum_pred, d1pred, d2pred
+
 
 class Trainer_Sym():
-    def __init__(self, train_loader, test_loader, model_dir, learning_rate, model : MNISTSum2Net, device):
+    def __init__(self, train_loader, test_loader, model_dir, learning_rate, model : MNISTNet, device):
         self.model_dir = model_dir
         self.network = model
         self.optimizer = optim.Adam(self.network.parameters(), lr=learning_rate)
@@ -217,28 +238,36 @@ class Trainer_Sym():
         self.Forall = ltn.Quantifier(ltn.fuzzy_ops.AggregPMeanError(p=2), quantifier="f")
         self.SatAgg = ltn.fuzzy_ops.SatAgg()
 
-    def train(self, num_epoch, i=5): #i è il numero di iterazioni dopo la quale p incrementa
+    def train(self, num_epoch):
         train_sats, train_losses, acc_train = [], [],[]
-        p=1
+        d1_acc_train, d2_acc_train = [], []
         d_1 = ltn.Variable("d_1", torch.tensor(range(10)))
         d_2 = ltn.Variable("d_2", torch.tensor(range(10)))
         for epoch in range(num_epoch):
-            if epoch > 0 and (epoch)% i == 0 and p <= 8:
-                if p == 1:
-                    p=2
-                else:
-                    p+=2
+            if epoch in range(0, 4):
+                p = 1
+            if epoch in range(4, 8):
+                p = 2
+            if epoch in range(8, 12):
+                p = 4
+            if epoch in range(12, 20):
+                p = 6
             y_true, y_pred = [], []
+            a_true, a_pred = [], []
+            b_true, b_pred = [], []
+            total_inference_time = 0.0
             running_loss = 0.0
             train_sat = 0.0
             self.network.train()
-            for ((d1,d2), target) in tqdm(self.train_loader, total=len(self.train_loader), desc='Train Loop'):
+            for ((img1,img2), (d1,d2)) in tqdm(self.train_loader, total=len(self.train_loader), desc='Train Loop'):
                 self.optimizer.zero_grad()
-                d1,d2 = d1.to(self.device), d2.to(self.device)
+                img1,img2 = img1.to(self.device), img2.to(self.device)
+                target = d1+d2
                 target = target.to(self.device)
-                img_d1 = ltn.Variable("x", d1)
-                img_d2 = ltn.Variable("y", d2)
+                img_d1 = ltn.Variable("x", img1)
+                img_d2 = ltn.Variable("y", img2)
                 label = ltn.Variable("z", target)
+                start_time = time.perf_counter()
                 sat_agg = self.Forall(
                     ltn.diag(img_d1, img_d2, label),
                     self.Exists(
@@ -249,16 +278,24 @@ class Trainer_Sym():
                         p=p
                     )
                 ).value
+                batch_time = time.perf_counter()-start_time
+                total_inference_time += batch_time
                 loss = 1. - sat_agg
                 loss.backward()
                 self.optimizer.step()
                 running_loss += loss.item() * target.size(0) 
-                train_sat += sat_agg * target.size(0)
-                p_d1, p_d2 = self.network((d1,d2))
-                preds = conv_sum(p_d1, p_d2).argmax(dim=1)
+                train_sat += sat_agg.item() * target.size(0)
+
+                preds, d1pred, d2pred = computePrediction((img1,img2),self.network)
                 
                 y_true.extend(target.cpu().tolist())
                 y_pred.extend(preds.detach().cpu().tolist())
+
+                a_true.extend(d1.cpu().tolist())
+                a_pred.extend(d1pred.detach().cpu().tolist())
+
+                b_true.extend(d2.cpu().tolist())
+                b_pred.extend(d2pred.detach().cpu().tolist())
             
             train_loss = running_loss / len(self.train_loader.dataset)
             train_losses.append(train_loss)
@@ -266,22 +303,20 @@ class Trainer_Sym():
             acc_train.append(running_train_accuracy)
             train_sat = train_sat / len(self.train_loader.dataset)
             train_sats.append(train_sat)
+            d1acc = accuracy_score(a_true, a_pred)
+            d2acc = accuracy_score(b_true, b_pred)
+            d1_acc_train.append(d1acc)
+            d2_acc_train.append(d2acc)
+            avg_inference_time = total_inference_time / len(self.train_loader.dataset) * 1000
             
             #stats
-            print(f"Epoca {epoch+1}/{num_epoch} - Train loss: {train_loss} with accuracy: {running_train_accuracy*100}% and Train Sat: {train_sat}")
+            print(f"Epoca {epoch+1}/{num_epoch} - {self.network.modelname} nesy model - Train loss: {train_loss} with accuracy: {running_train_accuracy*100}% and Train Sat: {train_sat} in {avg_inference_time}ms\n digit1 accuracy: {d1acc*100} and digit2 accuracy: {d2acc*100}")
         
-        plt.plot(train_losses, label='Training loss')
-        plt.legend()
-        plt.title("Loss over epochs")
-        plt.show()
-        plt.plot(acc_train, label='Accuracy in training')
-        plt.legend()
-        plt.title("Accuracy over epochs")
-        plt.show()
-        torch.save(self.network.state_dict(), os.path.join(self.model_dir, f"{self.network.mnist_net.modelname}_sym.pt"))
+        torch.save(self.network.state_dict(), os.path.join(self.model_dir, f"{self.network.modelname}_nesy.pt"))
         return {
-            "loss": min(train_losses),
-            "accuracy" : max(acc_train),
+            "loss": train_losses,
+            "accuracy" : acc_train,
+            "single-digit accuracy": (max(d1_acc_train), max(d2_acc_train)),
             "sat" : max(train_sats)
         }
         
@@ -289,19 +324,23 @@ class Trainer_Sym():
     def test(self):
         self.network.eval()
         y_true, y_pred = [], []
+        a_true, a_pred = [], []
+        b_true, b_pred = [], []
         running_loss = 0.0
+        total_inference_time = 0.0
         test_sat = 0.0
-        p=32
+        p=6
         d_1 = ltn.Variable("d_1", torch.tensor(range(10)))
         d_2 = ltn.Variable("d_2", torch.tensor(range(10)))
         with torch.no_grad():
-            for ((d1,d2), target) in tqdm(self.test_loader, total=len(self.test_loader), desc='Test Loop'):
-                d1,d2 = d1.to(self.device), d2.to(self.device)
+            for ((img1,img2), (d1,d2)) in tqdm(self.test_loader, total=len(self.test_loader), desc='Test Loop'):
+                img1,img2 = img1.to(self.device), img2.to(self.device)
+                target = d1 + d2
                 target = target.to(self.device)
-                img_d1 = ltn.Variable("x", d1)
-                img_d2 = ltn.Variable("y", d2)
+                img_d1 = ltn.Variable("x", img1)
+                img_d2 = ltn.Variable("y", img2)
                 label = ltn.Variable("z", target)
-                
+                start_time = time.perf_counter()
                 sat_agg = self.Forall(
                     ltn.diag(img_d1, img_d2, label),
                     self.Exists(
@@ -312,26 +351,39 @@ class Trainer_Sym():
                         p=p
                     )
                 ).value
+                batch_time = time.perf_counter() - start_time
+                total_inference_time += batch_time
                 loss = 1. - sat_agg
                 running_loss += loss.item() * target.size(0)
-                test_sat += sat_agg
-                p_d1, p_d2 = self.network((d1,d2))
-                preds = conv_sum(p_d1, p_d2).argmax(dim=1)
+                test_sat += sat_agg.item() * target.size(0)
+                preds, d1pred, d2pred = computePrediction((img1,img2),self.network)
                 
                 y_true.extend(target.cpu().tolist())
                 y_pred.extend(preds.detach().cpu().tolist())
 
+                a_true.extend(d1.cpu().tolist())
+                a_pred.extend(d1pred.detach().cpu().tolist())
+
+                b_true.extend(d2.cpu().tolist())
+                b_pred.extend(d2pred.detach().cpu().tolist())
+
         test_loss = running_loss / len(self.test_loader.dataset)
-        acc = accuracy_score(y_true, y_pred)
+        running_test_accuracy = accuracy_score(y_true, y_pred)
         test_sat = test_sat / len(self.test_loader.dataset)
+        d1acc = accuracy_score(a_true, a_pred)
+        d2acc = accuracy_score(b_true, b_pred)
+        avg_inference_time = total_inference_time / len(self.test_loader.dataset) * 1000
+        #aggiustare print
+        print(f"- {self.network.modelname} nesy model - Test loss: {test_loss} with accuracy: {running_test_accuracy*100}% and Test Sat: {test_sat} in {avg_inference_time}ms\n digit1 accuracy: {d1acc*100} and digit2 accuracy: {d2acc*100}")
         return {
             "loss": test_loss,
-            "accuracy" : acc,
+            "accuracy" : running_test_accuracy,
+            "single-digit accuracy": (d1acc, d2acc),
             "sat" : test_sat
         }
     
 class Trainer_NoSym:
-    def __init__(self, train_loader, test_loader, model_dir, learning_rate, model : MNISTSum2Net, device):
+    def __init__(self, train_loader, test_loader, model_dir,learning_rate, model : MNISTSum2Net, device):
         self.model_dir = model_dir
         self.network = model
         self.optimizer = optim.Adam(self.network.parameters(), lr=learning_rate)
@@ -343,65 +395,85 @@ class Trainer_NoSym:
 
     def train(self, num_epoch):
         train_losses, acc_train = [], []
+        d1_acc_train, d2_acc_train = [], []
         for epoch in range(num_epoch):
             y_true, y_pred = [], []
+            a_true, a_pred = [], []
+            b_true, b_pred = [], []
             running_loss = 0.0
             self.network.train()
-            for ((d1,d2), target) in tqdm(self.train_loader, total=len(self.train_loader), desc='Train Loop'):
+            for ((img1,img2),(d1,d2)) in tqdm(self.train_loader, total=len(self.train_loader), desc='Train Loop'):
                 self.optimizer.zero_grad()
-                d1,d2 = d1.to(self.device), d2.to(self.device)
+                img1,img2 = img1.to(self.device), img2.to(self.device)
+                target = d1 + d2
                 target = target.to(self.device)
-                (dprob1, dprob2) = self.network((d1,d2))
-                output = conv_sum(dprob1, dprob2)
+                output, d1pred, d2pred= self.network((img1,img2))
                 loss = self.loss(torch.log(output + 1e-9), target.long())
                 loss.backward()
                 self.optimizer.step()
                 running_loss += loss.item() * target.size(0) 
                 preds = output.argmax(dim=1)
+
                 y_true.extend(target.cpu().tolist())
                 y_pred.extend(preds.detach().cpu().tolist())
+
+                a_true.extend(d1.cpu().tolist())
+                a_pred.extend(d1pred.detach().cpu().tolist())
+
+                b_true.extend(d2.cpu().tolist())
+                b_pred.extend(d2pred.detach().cpu().tolist())
             
             train_loss = running_loss / len(self.train_loader.dataset)
             train_losses.append(train_loss)
             running_train_accuracy = accuracy_score(y_true, y_pred)
+            d1acc = accuracy_score(a_true, a_pred)
+            d2acc = accuracy_score(b_true, b_pred)
+            d1_acc_train.append(d1acc)
+            d2_acc_train.append(d2acc)
             acc_train.append(running_train_accuracy)
             
             #stats
-            print(f"Epoca {epoch+1}/{num_epoch} - Train loss: {train_loss} with accuracy: {running_train_accuracy*100}%")
+            print(f"Epoca {epoch+1}/{num_epoch} - {self.network.mnist_net.modelname} neural model - Train loss: {train_loss} with total accuracy: {running_train_accuracy*100}% \n digit1 accuracy: {d1acc} and digit2 accuracy: {d2acc}")
         
-        plt.plot(train_losses, label='Training loss')
-        plt.legend()
-        plt.title("Loss over epochs")
-        plt.show()
-        plt.plot(acc_train, label='Accuracy in training')
-        plt.legend()
-        plt.title("Accuracy over epochs")
-        plt.show()
-        torch.save(self.network.state_dict(), os.path.join(self.model_dir, f"{self.network.mnist_net.modelname}_nosym.pt"))
+        torch.save(self.network.state_dict(), os.path.join(self.model_dir, f"{self.network.mnist_net.modelname}_neural.pt"))
         return {
-            "loss": min(train_losses),
-            "accuracy" : max(acc_train),
+            "loss": train_losses,
+            "accuracy" : acc_train,
+            "single-digit accuracy": (max(d1_acc_train), max(d2_acc_train))
         }
     
     def test(self):
         self.network.eval()
         y_true, y_pred = [], []
+        a_true, a_pred = [], []
+        b_true, b_pred = [], []
         running_loss = 0.0
         with torch.no_grad():
-            for ((d1,d2), target) in tqdm(self.test_loader, total=len(self.test_loader), desc='Test Loop'):
-                d1,d2 = d1.to(self.device), d2.to(self.device)
+            for ((img1,img2),(d1,d2)) in tqdm(self.test_loader, total=len(self.test_loader), desc='Test Loop'):
+                img1,img2 = img1.to(self.device), img2.to(self.device)
+                target = d1 + d2
                 target = target.to(self.device)
-                (dprob1, dprob2) = self.network((d1,d2))
-                output = conv_sum(dprob1, dprob2)
+                output, d1pred, d2pred = self.network((img1,img2))
                 running_loss += self.loss(torch.log(output + 1e-9), target.long()).item() * target.size(0)
                 preds = output.argmax(dim=1)
+                
                 y_true.extend(target.cpu().tolist())
                 y_pred.extend(preds.detach().cpu().tolist())
 
+                a_true.extend(d1.cpu().tolist())
+                a_pred.extend(d1pred.detach().cpu().tolist())
+
+                b_true.extend(d2.cpu().tolist())
+                b_pred.extend(d2pred.detach().cpu().tolist())
+
         test_loss = running_loss / len(self.test_loader.dataset)
         acc = accuracy_score(y_true, y_pred)
-        #cm = confusion_matrix(y_true, y_pred)
+        d1acc = accuracy_score(a_true,a_pred)
+        d2acc = accuracy_score(b_true,b_pred)
+        
+        print(f"- {self.network.mnist_net.modelname} neural model - Test loss: {test_loss} with total accuracy: {acc*100}% \n digit1 accuracy: {d1acc} and digit2 accuracy: {d2acc}")
         return {
             "loss": test_loss,
             "accuracy" : acc,
+            "single-digit accuracy": (d1acc,d2acc)
         }
