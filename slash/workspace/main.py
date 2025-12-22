@@ -12,6 +12,34 @@ import pandas as pd
 import utils 
 import json
 
+def compGraph(accuracy, modelname, data_dir, losses = None):
+    if losses is not None:
+        plt.figure(figsize=(10,6))
+        plt.plot(losses["nesy"], label='Neuro-Simbolic', color='blue', linewidth=2)
+        plt.plot(losses["neural"], label='Neural baseline (Black Box)', color='red',linestyle='--', linewidth=2)
+        plt.title("Confronto Loss in training: NeSy vs Neural Baseline", fontsize=14)
+        plt.xlabel("Epoche", fontsize=12)
+        plt.ylabel("Loss", fontsize=12)
+        plt.ylim(0, 4.0)
+        plt.grid(True, linestyle="--", alpha=0.7)
+        plt.legend(fontsize=12)
+        plt.savefig(os.path.join(data_dir, f"{modelname}/loss_{modelname}_result.png"), dpi=300)
+        plt.show()
+        plt.close()
+
+    plt.figure(figsize=(10,6))
+    plt.plot(accuracy["nesy"], label='Neuro-Simbolic', color='blue', linewidth=2)
+    plt.plot(accuracy["neural"], label='Neural baseline (Black Box)', color='red',linestyle='--', linewidth=2)
+    plt.title("Confronto Accuracy in training: NeSy vs Neural Baseline", fontsize=14)
+    plt.xlabel("Epoche", fontsize=12)
+    plt.ylabel("Accuracy", fontsize=12)
+    plt.ylim(0, 1.05)
+    plt.grid(True, linestyle="--", alpha=0.7)
+    plt.legend(fontsize=12)
+    plt.savefig(os.path.join(data_dir, f"{modelname}/accuracy_{modelname}_result.png"), dpi=300)
+    plt.show()
+    plt.close()
+
 def saveJsonResults(filename, data):
         try:
             with open(data_dir+f"/{filename}.json", 'w') as f:
@@ -25,11 +53,11 @@ def load_all_models(model_dir, models):
     for f in pt_files:
         path = model_dir + "/" + f
         filename = f.lower()
-        is_sym = 0 if "nosym" in filename else 1
+        is_sym = 0 if "neural" in filename else 1
 
-        if "b0" in filename: key = "b0_sym" if is_sym else "b0_nosym"
-        elif "b3" in filename: key = "b3_sym" if is_sym else "b3_nosym"
-        elif "basic" in filename: key = "basic_sym" if is_sym else "basic_nosym"
+        if "b0" in filename: key = "b0_nesy" if is_sym else "b0_neural"
+        elif "b3" in filename: key = "b3_nesy" if is_sym else "b3_neural"
+        elif "basic" in filename: key = "basic_nesy" if is_sym else "basic_neural"
         else: raise KeyError(f"Nessun modello per il file '{f}' (chiave inferita: {key}).")
         
         state = torch.load(path, map_location=device)
@@ -40,13 +68,13 @@ def load_all_models(model_dir, models):
 parser = argparse.ArgumentParser()
 
 # Parameters
-parser.add_argument("--epochs", type=int, default=5)
+parser.add_argument("--epochs", type=int, default=20)
 parser.add_argument("--batch-size-train", type=int, default=32)
 parser.add_argument("--batch-size-test", type=int, default=32)
 parser.add_argument("--p-num", type=int, default=8)
 parser.add_argument("--lr", type=float, default=1e-3)
-parser.add_argument("--k", type=int, default=3)
-parser.add_argument("--method",choices=["exact","top_k","same"], default = "top_k")
+parser.add_argument("--k", type=int, default=0)
+parser.add_argument("--method",choices=["exact","top_k","same"], default = "same")
 parser.add_argument("--seed", type=int, default=123)
 parser.add_argument("--modeldir", type=str, default="./model/mnist_sum_2")
 parser.add_argument("--datadir", type=str, default="./data")
@@ -122,9 +150,9 @@ b_ns = utils.MNISTSum2Net(basic_nsym)
 b0_ns = utils.MNISTSum2Net(b0_nsym)
 b3_ns = utils.MNISTSum2Net(b3_nsym) 
 
-models = {"basic_nosym":b_ns, "basic_sym":basic_sym, 
-        "b0_nosym":b0_ns, "b0_sym":b0_sym, 
-        "b3_nosym":b3_ns, "b3_sym":b3_sym}
+models = {"basic_neural":b_ns, "basic_nesy":basic_sym, 
+        "b0_neural":b0_ns, "b0_nesy":b0_sym, 
+        "b3_neural":b3_ns, "b3_nesy":b3_sym}
 
 #trainer no sym
 trainer_NoSym_basic = utils.Trainer_NoSym(train_loader_b_ns, test_loader_b_ns, model_dir,learning_rate, b_ns, device)
@@ -132,9 +160,9 @@ trainer_NoSym_b0 = utils.Trainer_NoSym(train_loader_b0_ns, test_loader_b0_ns, mo
 trainer_NoSym_b3 = utils.Trainer_NoSym(train_loader_b3_ns, test_loader_b3_ns, model_dir,learning_rate, b3_ns , device)
 
 #trainer sym
-trainer_Sym_basic = utils.Trainer_Sym(train_loader_b_s, test_loader_b_ns, model_dir,learning_rate, basic_sym, method, p_num, k,device)
-trainer_Sym_b0 = utils.Trainer_Sym(train_loader_b0_s, test_loader_b0_ns, model_dir,learning_rate, b0_sym, method, p_num, k,device)
-trainer_Sym_b3 = utils.Trainer_Sym(train_loader_b3_s, test_loader_b3_ns, model_dir,learning_rate, b3_sym, method, p_num, k,device)
+trainer_Sym_basic = utils.Trainer_Sym(train_loader_b_s, train_loader_b_ns, test_loader_b_ns, model_dir,learning_rate, basic_sym, method, p_num, k,device)
+trainer_Sym_b0 = utils.Trainer_Sym(train_loader_b0_s, train_loader_b0_ns, test_loader_b0_ns, model_dir,learning_rate, b0_sym, method, p_num, k,device)
+trainer_Sym_b3 = utils.Trainer_Sym(train_loader_b3_s, train_loader_b3_ns, test_loader_b3_ns, model_dir,learning_rate, b3_sym, method, p_num, k,device)
 
 #training
 if no_train is True:
@@ -144,78 +172,91 @@ if no_train is True:
 else:
     print("Inizio training dei modelli")
     rb_train_s = trainer_Sym_basic.train(n_epochs)
-    #rb_train_ns = trainer_NoSym_basic.train(n_epochs)
-    """
+    rb_train_ns = trainer_NoSym_basic.train(n_epochs)
     rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
     rb0_train_s = trainer_Sym_b0.train(n_epochs)
     rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
     rb3_train_s = trainer_Sym_b3.train(n_epochs)
+    
     training_results = {
         "MNISTNet_basic": {
-            "train_sym":  rb_train_s,
-            "train_nosym": rb_train_ns,
+            "train_nesy":  rb_train_s,
+            "train_neural": rb_train_ns,
         },
         "EfficientNet-B0": {
-            "train_sym":  rb0_train_s,
-            "train_nosym": rb0_train_ns,
+            "train_nesy":  rb0_train_s,
+            "train_neural": rb0_train_ns,
         },
         "EfficientNet-B3": {
-            "train_sym":  rb3_train_s,
-            "train_nosym": rb3_train_ns,
+            "train_nesy":  rb3_train_s,
+            "train_neural": rb3_train_ns,
         },
     }   
     saveJsonResults("training_results", training_results)
-    """
+
+
 #testing
 print("Inizio testing dei modelli")
-
-#rb_test_ns = trainer_NoSym_basic.test()
+rb_test_ns = trainer_NoSym_basic.test()
 rb_test_s = trainer_Sym_basic.test()
-"""
 rb0_test_ns = trainer_NoSym_b0.test()
 rb0_test_s = trainer_Sym_b0.test()
 rb3_test_ns = trainer_NoSym_b3.test()
 rb3_test_s = trainer_Sym_b3.test()
-"""
-print(f"Train results with sym: {rb_train_s} \n")
-print(f"Test results with sym: {rb_test_s} \n")
+
 
 results = {
     "MNISTNet_basic": {
-        "train_sym":  rb_train_s,
-        "test_sym":   rb_test_s,
-        "train_nosym": rb_train_ns,
-        "test_nosym": rb_test_ns,
+        "train_nesy":  training_results["MNISTNet_basic"]["train_nesy"],
+        "test_nesy":   rb_test_s,
+        "train_neural": training_results["MNISTNet_basic"]["train_neural"],
+        "test_neural": rb_test_ns,
     },
     "EfficientNet-B0": {
-        "train_sym":  rb0_train_s,
-        "test_sym":   rb0_test_s,
-        "train_nosym": rb0_train_ns,
-        "test_nosym": rb0_test_ns,
+        "train_nesy":  training_results["EfficientNet-B0"]["train_nesy"],
+        "test_nesy":   rb0_test_s,
+        "train_neural": training_results["EfficientNet-B0"]["train_neural"],
+        "test_neural": rb0_test_ns,
     },
     "EfficientNet-B3": {
-        "train_sym":  rb3_train_s,
-        "test_sym":   rb3_test_s,
-        "train_nosym": rb3_train_ns,
-        "test_nosym": rb3_test_ns,
+        "train_nesy":  training_results["EfficientNet-B3"]["train_nesy"],
+        "test_nesy":   rb3_test_s,
+        "train_neural": training_results["EfficientNet-B3"]["train_neural"],
+        "test_neural": rb3_test_ns,
     },
 }
 
 # salvataggio risultati
 
 rows = list(results.keys())
-cols = ["Train (Sym)", "Test (Sym)","Train (NoSym)", "Test (NoSym)"]
 
-def fmt_cell(loss, acc):
-    return f"{loss:.4f} / {acc*100:.2f}%"
+cols = ["Train (NeSy)", "Test (NeSy)","Train (Neural)", "Test (Neural)"]
+
+def fmt_cell(loss, acc, single_acc):
+    d1, d2 = single_acc
+    return f"L:{loss:.4f}\nA:{acc*100:.1f}%\nD:{d1*100:.1f}/{d2*100:.1f}%"
 
 df = pd.DataFrame(index=rows, columns=cols)
 for model in rows:
     r = results[model]
-    df.loc[model, "Train (Sym)"] = fmt_cell(r["train_sym"]["loss"], r["train_sym"]["accuracy"])
-    df.loc[model, "Test (Sym)"] = fmt_cell(r["test_sym"]["loss"], r["test_sym"]["accuracy"])
-    df.loc[model, "Train (NoSym)"] = fmt_cell(r["train_nosym"]["loss"], r["train_nosym"]["accuracy"])
-    df.loc[model, "Test (NoSym)"] = fmt_cell(r["test_nosym"]["loss"], r["test_nosym"]["accuracy"])
+
+    if "basic" in model:
+        modelname = "basic"
+    elif "B0" in model:
+        modelname = "b0"
+    else:
+        modelname = "b3"
+        
+    compGraph(
+            {"nesy": r["train_nesy"]["accuracy"], "neural": r["train_neural"]["accuracy"]},
+            modelname,
+            data_dir
+            )
+    
+    df.loc[model, "Train (NeSy)"] = fmt_cell(min(r["train_nesy"]["loss"]), max(r["train_nesy"]["accuracy"]), r["train_nesy"]["single-digit accuracy"])
+    df.loc[model, "Test (NeSy)"] = fmt_cell(r["test_nesy"]["loss"], r["test_nesy"]["accuracy"], r["test_nesy"]["single-digit accuracy"])
+    df.loc[model, "Train (Neural)"] = fmt_cell(min(r["train_neural"]["loss"]), max(r["train_neural"]["accuracy"]), r["train_neural"]["single-digit accuracy"])
+    df.loc[model, "Test (Neural)"] = fmt_cell(r["test_neural"]["loss"], r["test_neural"]["accuracy"], r["test_neural"]["single-digit accuracy"])
 
 def save_table_image(df : pd.DataFrame, out_png="./data/results.png", figsize=(12, 4.5), dpi=200, header_color="#f0f0f0"):
     fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
