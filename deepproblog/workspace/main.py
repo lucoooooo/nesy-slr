@@ -13,7 +13,7 @@ import torchvision
 
 def compGraph(losses, modelname, data_dir,accuracy=None):
     plt.figure(figsize=(10,6))
-    plt.plot(losses["nesy"], label='Neuro-Simbolic', color='blue', linewidth=2)
+    plt.plot(losses["nesy"], label='Neuro-Symbolic', color='blue', linewidth=2)
     plt.plot(losses["neural"], label='Neural baseline (Black Box)', color='red',linestyle='--', linewidth=2)
     plt.title("Confronto Loss in training: NeSy vs Neural Baseline", fontsize=14)
     plt.xlabel("Epoche", fontsize=12)
@@ -27,7 +27,7 @@ def compGraph(losses, modelname, data_dir,accuracy=None):
 
     if accuracy is not None:
         plt.figure(figsize=(10,6))
-        plt.plot(accuracy["nesy"], label='Neuro-Simbolic', color='blue', linewidth=2)
+        plt.plot(accuracy["nesy"], label='Neuro-Symbolic', color='blue', linewidth=2)
         plt.plot(accuracy["neural"], label='Neural baseline (Black Box)', color='red',linestyle='--', linewidth=2)
         plt.title("Confronto Accuracy in training: NeSy vs Neural Baseline", fontsize=14)
         plt.xlabel("Epoche", fontsize=12)
@@ -59,7 +59,6 @@ def load_all_models(model_dir, models, device):
         elif "basic" in filename: key = "basic_nesy" if is_sym else "basic_neural"
         else: raise KeyError(f"Nessun modello per il file '{f}' (chiave inferita: {key}).")
         
-        print(path)
         if is_sym:
             models[key].load_state_dict(path, device)
         else:

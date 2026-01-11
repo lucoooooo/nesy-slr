@@ -482,10 +482,10 @@ class DeepProblogModel:
     #finire di aggiustare train
 
     def train(self, n_epochs, test_loader):
-        logger = self.train_object.train(self.train_loader, n_epochs)
+        _, train_losses = self.train_object.train(self.train_loader, n_epochs)
         self.model.save_state(self.modeldir+f"/{self.net.network_module.modelname}_nesy.pth")
         #loss per grafo
-        train_losses = logger["loss"][1]
+        
         #print(train_losses)
 
         #accuracy 
@@ -497,7 +497,6 @@ class DeepProblogModel:
         sd_accuracy = self.single_digit_acc(self.net.network_module, test_loader, self.device)
         
         self.saveResults(True)
-        logger.clear()
         return {
             "loss": train_losses,
             "accuracy": train_acc.item(),
@@ -572,4 +571,5 @@ class DeepProblogModel:
 
     def saveResults(self,train = False):
         phase = "train" if train else "test"
-        self.train_object.logger.write_to_file(self.datadir+f"/{self.net.network_module.modelname}_{phase}_nesy")
+        modelname = self.net.network_module.modelname
+        self.train_object.logger.write_to_file(self.datadir+f"/{modelname}/{modelname}_{phase}_nesy")

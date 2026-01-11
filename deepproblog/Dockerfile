@@ -9,8 +9,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN pip install --upgrade pip
 
+COPY ./deepproblog /opt/deepproblog
+WORKDIR /opt/deepproblog
+
 RUN pip install --no-cache-dir torch torchvision torchaudio jupyter matplotlib pandas numpy tqdm timm scikit-learn \
-    && pip install --no-cache-dir deepproblog && pip install git+https://github.com/ML-KULeuven/pyswip
+    && pip install --no-cache-dir -e . && pip install git+https://github.com/ML-KULeuven/pyswip
 # pip install --no-cache-dir deepproblog && pip install git+https://github.com/ML-KULeuven/pyswip && apt-get install swi-prolog=8.4* swi-prolog-nox=8.4* swi-prolog-x=8.4* && pip install sympy==1.12.0
 WORKDIR /workspace
 CMD ["bash"]
