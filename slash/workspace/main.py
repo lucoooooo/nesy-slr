@@ -15,7 +15,7 @@ import json
 def compGraph(accuracy, modelname, data_dir, losses = None):
     if losses is not None:
         plt.figure(figsize=(10,6))
-        plt.plot(losses["nesy"], label='Neuro-Simbolic', color='blue', linewidth=2)
+        plt.plot(losses["nesy"], label='Neuro-Symbolic', color='blue', linewidth=2)
         plt.plot(losses["neural"], label='Neural baseline (Black Box)', color='red',linestyle='--', linewidth=2)
         plt.title("Confronto Loss in training: NeSy vs Neural Baseline", fontsize=14)
         plt.xlabel("Epoche", fontsize=12)
@@ -28,7 +28,7 @@ def compGraph(accuracy, modelname, data_dir, losses = None):
         plt.close()
 
     plt.figure(figsize=(10,6))
-    plt.plot(accuracy["nesy"], label='Neuro-Simbolic', color='blue', linewidth=2)
+    plt.plot(accuracy["nesy"], label='Neuro-Symbolic', color='blue', linewidth=2)
     plt.plot(accuracy["neural"], label='Neural baseline (Black Box)', color='red',linestyle='--', linewidth=2)
     plt.title("Confronto Accuracy in training: NeSy vs Neural Baseline", fontsize=14)
     plt.xlabel("Epoche", fontsize=12)
@@ -175,8 +175,8 @@ else:
     rb_train_ns = trainer_NoSym_basic.train(n_epochs)
     rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
     rb0_train_s = trainer_Sym_b0.train(n_epochs)
-    rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
     rb3_train_s = trainer_Sym_b3.train(n_epochs)
+    rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
     
     training_results = {
         "MNISTNet_basic": {
