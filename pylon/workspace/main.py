@@ -12,7 +12,7 @@ import utils
 
 def compGraph(losses, accuracy, modelname, data_dir):
     plt.figure(figsize=(10,6))
-    plt.plot(losses["nesy"], label='Neuro-Simbolic', color='blue', linewidth=2)
+    plt.plot(losses["nesy"], label='Neuro-Symbolic', color='blue', linewidth=2)
     plt.plot(losses["neural"], label='Neural baseline (Black Box)', color='red',linestyle='--', linewidth=2)
     plt.title("Confronto Loss in training: NeSy vs Neural Baseline", fontsize=14)
     plt.xlabel("Epoche", fontsize=12)
@@ -25,7 +25,7 @@ def compGraph(losses, accuracy, modelname, data_dir):
     plt.close()
 
     plt.figure(figsize=(10,6))
-    plt.plot(accuracy["nesy"], label='Neuro-Simbolic', color='blue', linewidth=2)
+    plt.plot(accuracy["nesy"], label='Neuro-Symbolic', color='blue', linewidth=2)
     plt.plot(accuracy["neural"], label='Neural baseline (Black Box)', color='red',linestyle='--', linewidth=2)
     plt.title("Confronto Accuracy in training: NeSy vs Neural Baseline", fontsize=14)
     plt.xlabel("Epoche", fontsize=12)
