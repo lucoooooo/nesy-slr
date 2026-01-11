@@ -13,7 +13,7 @@ class DataLoader(object):
     ):
         self.dataset = dataset
         self.batch_size = batch_size
-	self.length = len(dataset)
+        self.length = len(dataset)
         self.shuffle = shuffle
         if max_size is not None:
             self.length = min(self.length, max_size)

@@ -11,7 +11,7 @@ import argparse
 
 def compGraph(losses, accuracy, modelname, data_dir):
     plt.figure(figsize=(10,6))
-    plt.plot(losses["nesy"], label='Neuro-Simbolic', color='blue', linewidth=2)
+    plt.plot(losses["nesy"], label='Neuro-Symbolic', color='blue', linewidth=2)
     plt.plot(losses["neural"], label='Neural baseline (Black Box)', color='red',linestyle='--', linewidth=2)
     plt.title("Confronto Loss in training: NeSy vs Neural Baseline", fontsize=14)
     plt.xlabel("Epoche", fontsize=12)
@@ -24,7 +24,7 @@ def compGraph(losses, accuracy, modelname, data_dir):
     plt.close()
 
     plt.figure(figsize=(10,6))
-    plt.plot(accuracy["nesy"], label='Neuro-Simbolic', color='blue', linewidth=2)
+    plt.plot(accuracy["nesy"], label='Neuro-Symbolic', color='blue', linewidth=2)
     plt.plot(accuracy["neural"], label='Neural baseline (Black Box)', color='red',linestyle='--', linewidth=2)
     plt.title("Confronto Accuracy in training: NeSy vs Neural Baseline", fontsize=14)
     plt.xlabel("Epoche", fontsize=12)
@@ -146,8 +146,8 @@ b0_ns = utils.MNISTSum2Net(b0_nsym)
 b3_ns = utils.MNISTSum2Net(b3_nsym)
 
 #mnist sum net with sym
-#rimettere device normale
-trainer_Sym_basic = utils.Trainer_Sym(basic_sym,  model_dir, data_dir,"cpu", dataset_sym["basic"]["trainset"], dataset_sym["basic"]["testset"], batch_size_train,batch_size_test, learning_rate, onlyTest=no_train)
+
+trainer_Sym_basic = utils.Trainer_Sym(basic_sym,  model_dir, data_dir,device, dataset_sym["basic"]["trainset"], dataset_sym["basic"]["testset"], batch_size_train,batch_size_test, learning_rate, onlyTest=no_train)
 trainer_Sym_b0 = utils.Trainer_Sym(b0_sym, model_dir, data_dir, device, dataset_sym["b0"]["trainset"], dataset_sym["b0"]["testset"], batch_size_train, batch_size_test, learning_rate, onlyTest=no_train)
 trainer_Sym_b3= utils.Trainer_Sym(b3_sym,  model_dir, data_dir, device,dataset_sym["b3"]["trainset"], dataset_sym["b3"]["testset"], batch_size_train,batch_size_test, learning_rate, onlyTest=no_train)
 

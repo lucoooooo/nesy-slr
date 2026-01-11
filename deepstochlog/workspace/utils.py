@@ -35,8 +35,10 @@ mnistb0_img_transform = torchvision.transforms.Compose([
     torchvision.transforms.Grayscale(num_output_channels=3),
     torchvision.transforms.Resize(64, interpolation=torchvision.transforms.InterpolationMode.BICUBIC, antialias=True),
     torchvision.transforms.ToTensor(),
-    torchvision.transforms.Normalize(mean=(0.1307,)*3,
-                        std=(0.3081,)*3),
+    #torchvision.transforms.Normalize(mean=(0.1307,)*3,
+    #                    std=(0.3081,)*3),
+    torchvision.transforms.Normalize(mean=[0.485,0.456,0.406],
+                                    std=[0.229,0.224,0.225]),
 ])
 
 mnistb3_img_transform = mnistb0_img_transform
@@ -413,8 +415,6 @@ class Trainer_NoSym:
             "accuracy" : acc,
             "single-digit accuracy": (d1acc,d2acc)
         }
-    
-#aggiornare trainer_sym
 
 class Trainer_Sym:
     def __init__(self, net: MNISTNet, modeldir, datadir,device, trainset : MNISTSum2Dataset_SYM, testset : MNISTSum2Dataset_SYM, batch_size_train,batch_size_test, learning_rate, onlyTest=False):
