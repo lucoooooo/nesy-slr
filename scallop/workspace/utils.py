@@ -37,8 +37,10 @@ mnistb0_img_transform = torchvision.transforms.Compose([
     torchvision.transforms.Grayscale(num_output_channels=3),
     torchvision.transforms.Resize(64, interpolation=torchvision.transforms.InterpolationMode.BICUBIC, antialias=True),
     torchvision.transforms.ToTensor(),
-    torchvision.transforms.Normalize(mean=(0.1307,)*3,
-                        std=(0.3081,)*3),
+    #torchvision.transforms.Normalize(mean=(0.1307,)*3,
+    #                    std=(0.3081,)*3),
+    torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                        std=[0.229,0.224,0.225]),
 ])
 
 mnistb3_img_transform = mnistb0_img_transform
