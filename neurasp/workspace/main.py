@@ -75,12 +75,14 @@ parser.add_argument("--method",choices=["exact","sampling"], default = "exact")
 parser.add_argument("--seed", type=int, default=123)
 parser.add_argument("--modeldir", type=str, default="./model/mnist_sum_2")
 parser.add_argument("--datadir", type=str, default="./data")
+parser.add_argument("--max-size", type=int, default=5000)
 parser.add_argument("--no-train", action="store_true")
 args = parser.parse_args()
 n_epochs = args.epochs
 no_train = args.no_train
 seed = args.seed
 method = args.method
+max_size = args.max_size
 batch_size_train = args.batch_size_train
 batch_size_test = args.batch_size_train
 learning_rate = args.lr
@@ -160,9 +162,9 @@ trainer_NoSym_b0 = utils.Trainer_NoSym(train_loader_b0_ns, test_loader_b0_ns, mo
 trainer_NoSym_b3 = utils.Trainer_NoSym(train_loader_b3_ns, test_loader_b3_ns, model_dir,learning_rate, b3_ns , device)
 
 #trainer sym
-trainer_Sym_basic = utils.Trainer_Sym(train_set_b_s, train_loader_b_ns, test_loader_b_ns, model_dir,learning_rate,batch_size_train,  basic_sym, method,device)
-trainer_Sym_b0 = utils.Trainer_Sym(train_set_b0_s, train_loader_b0_ns, test_loader_b0_ns, model_dir,learning_rate,batch_size_train, b0_sym, method,device)
-trainer_Sym_b3 = utils.Trainer_Sym(train_set_b3_s, train_loader_b3_ns, test_loader_b3_ns, model_dir,learning_rate,batch_size_train,  b3_sym, method,device)
+trainer_Sym_basic = utils.Trainer_Sym(train_set_b_s, train_loader_b_ns, test_loader_b_ns, model_dir,learning_rate,batch_size_train,  basic_sym, method,device, max_size)
+#trainer_Sym_b0 = utils.Trainer_Sym(train_set_b0_s, train_loader_b0_ns, test_loader_b0_ns, model_dir,learning_rate,batch_size_train, b0_sym, method,device, max_size)
+#trainer_Sym_b3 = utils.Trainer_Sym(train_set_b3_s, train_loader_b3_ns, test_loader_b3_ns, model_dir,learning_rate,batch_size_train,  b3_sym, method,device,max_size)
 
 #training
 if no_train is True:

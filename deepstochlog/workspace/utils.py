@@ -417,7 +417,7 @@ class Trainer_NoSym:
         }
 
 class Trainer_Sym:
-    def __init__(self, net: MNISTNet, modeldir, datadir,device, trainset : MNISTSum2Dataset_SYM, testset : MNISTSum2Dataset_SYM, batch_size_train,batch_size_test, learning_rate, onlyTest=False):
+    def __init__(self, net: MNISTNet, modeldir, datadir,device, trainset : MNISTSum2Dataset_SYM, testset : MNISTSum2Dataset_SYM, batch_size_train,batch_size_test, learning_rate, onlyTest=False, max_size = 15000):
         self.mnist_classifier = net
         self.net = Network("mnist", self.mnist_classifier, index_list = [Term(str(i)) for i in range(10)])
         self.device = device
@@ -446,8 +446,8 @@ class Trainer_Sym:
         )
         self.optimizer = optim.Adam(self.model.get_all_net_parameters(), lr=learning_rate)
         if not onlyTest:
-            self.trainloader = DL(trainset, batch_size=batch_size_train, max_size=15000)
-            self.trainloader_test = DL(trainset, batch_size=batch_size_train, max_size=15000)
+            self.trainloader = DL(trainset, batch_size=batch_size_train, max_size=max_size)
+            self.trainloader_test = DL(trainset, batch_size=batch_size_train, max_size=max_size)
             compute_accuracy = create_model_accuracy_calculator(
                     self.model,
                     self.trainloader_test,
@@ -502,7 +502,6 @@ class Trainer_Sym:
         gc.collect()
 
         train_acc = []
-        print(train_losses, result_acc)
         for acc in result_acc:
             acc = acc.split()
             train_acc.append(float(acc[0]))

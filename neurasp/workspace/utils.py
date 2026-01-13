@@ -326,20 +326,20 @@ def conv_sum(d1, d2):
     return p_sum
 
 class Trainer_Sym():
-    def __init__(self, train_loader_nesy,train_loader_ns, test_loader_ns, model_dir, learning_rate,batch_size, model : MNISTNet, method, device):
+    def __init__(self, train_loader_nesy,train_loader_ns, test_loader_ns, model_dir, learning_rate,batch_size, model : MNISTNet, method, device, max_size):
         self.model_dir = model_dir
         self.network = model
         self.device = device
         self.train_set_nesy = train_loader_nesy #dataloader con query per neurasp (mnist sum dataset)
         self.dataList = []
         self.obsList = []
-        self.batchsize = batch_size / 2
+        self.batchsize = batch_size
         for i, (img1,d1,img2,d2) in enumerate(self.train_set_nesy):
             img1 = img1.to(self.device)
             img2 = img2.to(self.device)
             d1 = (torch.tensor(d1)).to(self.device)
             d2 = (torch.tensor(d2)).to(self.device)
-            if i >= 5000:
+            if i >= max_size:
                 break
             self.dataList.append({'i1': (img1.unsqueeze(0), {'digit': d1}), 'i2': (img2.unsqueeze(0), {'digit': d2})})
             self.obsList.append(':- not addition(i1, i2, {}).'.format(d1+d2))

@@ -166,7 +166,6 @@ class DeepStochLogTrainer:
             total_samples = 0
             for batch in dataloader:
                 # Cross-Entropy (CE) loss
-                print(len(batch))
                 probabilities = model.predict_sum_product(batch)
                 if self.allow_zero_probability_examples:
                     targets = torch.as_tensor(

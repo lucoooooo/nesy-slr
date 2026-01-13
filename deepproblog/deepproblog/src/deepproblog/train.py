@@ -131,7 +131,7 @@ class TrainObject(object):
                 else:
                     loss = self.get_loss(batch, loss_function)
                 self.accumulated_loss += loss
-                epoch_loss += loss.item() * len(batch)
+                epoch_loss += float(loss) * len(batch)
                 total_samples = len(batch)
                 self.model.optimizer.step()
                 self.log(verbose=verbose, log_iter=log_iter, **kwargs)

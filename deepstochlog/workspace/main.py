@@ -67,6 +67,7 @@ parser.add_argument("--batch_size_train", type=int, default=32)
 parser.add_argument("--batch_size_test", type=int, default=32)
 parser.add_argument("--lr", type=float, default=1e-3)
 parser.add_argument("--seed", type=int, default=123)
+parser.add_argument("--max-size", type=int, default=15000)
 parser.add_argument("--modeldir", type=str, default="./model/mnist_sum_2")
 parser.add_argument("--datadir", type=str, default="./data")
 parser.add_argument("--no_train", action="store_true")
@@ -76,6 +77,7 @@ no_train = args.no_train
 seed = args.seed
 batch_size_train = args.batch_size_train
 batch_size_test = args.batch_size_train
+max_size = args.max_size
 learning_rate = args.lr
 
 if torch.cuda.is_available():
@@ -147,9 +149,9 @@ b3_ns = utils.MNISTSum2Net(b3_nsym)
 
 #mnist sum net with sym
 
-trainer_Sym_basic = utils.Trainer_Sym(basic_sym,  model_dir, data_dir,device, dataset_sym["basic"]["trainset"], dataset_sym["basic"]["testset"], batch_size_train,batch_size_test, learning_rate, onlyTest=no_train)
-trainer_Sym_b0 = utils.Trainer_Sym(b0_sym, model_dir, data_dir, device, dataset_sym["b0"]["trainset"], dataset_sym["b0"]["testset"], batch_size_train, batch_size_test, learning_rate, onlyTest=no_train)
-trainer_Sym_b3= utils.Trainer_Sym(b3_sym,  model_dir, data_dir, device,dataset_sym["b3"]["trainset"], dataset_sym["b3"]["testset"], batch_size_train,batch_size_test, learning_rate, onlyTest=no_train)
+trainer_Sym_basic = utils.Trainer_Sym(basic_sym,  model_dir, data_dir,device, dataset_sym["basic"]["trainset"], dataset_sym["basic"]["testset"], batch_size_train,batch_size_test, learning_rate, onlyTest=no_train, max_size=max_size)
+trainer_Sym_b0 = utils.Trainer_Sym(b0_sym, model_dir, data_dir, device, dataset_sym["b0"]["trainset"], dataset_sym["b0"]["testset"], batch_size_train, batch_size_test, learning_rate, onlyTest=no_train, max_size=max_size)
+trainer_Sym_b3= utils.Trainer_Sym(b3_sym,  model_dir, data_dir, device,dataset_sym["b3"]["trainset"], dataset_sym["b3"]["testset"], batch_size_train,batch_size_test, learning_rate, onlyTest=no_train, max_size=max_size)
 
 models = {"basic_neural":b_ns, "basic_nesy":basic_sym, 
         "b0_neural":b0_ns, "b0_nesy":b0_sym, 
