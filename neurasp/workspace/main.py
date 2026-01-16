@@ -86,7 +86,6 @@ max_size = args.max_size
 batch_size_train = args.batch_size_train
 batch_size_test = args.batch_size_train
 learning_rate = args.lr
-print(method)
 
 if torch.cuda.is_available():
     device = torch.device("cuda:0")
