@@ -1,4 +1,4 @@
-# titolo tesi da definire
+# Librerie e strumenti e applicazioni per l'IA neuro-simbolica: una panoramica 
 
 Questo repository contiene il codice, gli esperimenti e la documentazione relativa alla mia Tesi di Laurea Triennale in Informatica, focalizzata sulla rassegna e l'analisi delle moderne librerie di **Intelligenza Artificiale Neuro-Simbolica (NeSy)**.
 
