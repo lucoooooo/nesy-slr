@@ -10,6 +10,7 @@ import utils
 from deepproblog.evaluate import get_confusion_matrix
 import argparse
 import torchvision
+import time
 
 def compGraph(losses, modelname, data_dir,accuracy=None):
     plt.figure(figsize=(10,6))
@@ -189,12 +190,33 @@ if no_train is True:
         training_results = json.load(f)
 else:
     print("Inizio training dei modelli")
+    
+    t0_b_s = time.perf_counter() 
     rb_train_s = b_s.train(n_epochs,test_loader_singledigit_basic)
+    print(f"Training modello basic nesy terminato in: {utils.time_delta_now(t0_b_s)}")
+
+    t0_b_ns = time.perf_counter() 
     rb_train_ns = trainer_NoSym_basic.train(n_epochs)
-    rb0_train_s = b0_s.train(n_epochs,test_loader_singledigit_b0)
+    print(f"Training modello basic neural terminato in: {utils.time_delta_now(t0_b_ns)}")
+
+    t0_b0_ns = time.perf_counter() 
     rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
-    rb3_train_s = b3_s.train(n_epochs,test_loader_singledigit_b3)
+    print(f"Training modello b0 neural terminato in: {utils.time_delta_now(t0_b0_ns)}")
+
+    t0_b0_s = time.perf_counter() 
+    rb0_train_s = b0_s.train(n_epochs,test_loader_singledigit_b0)
+    print(f"Training modello b0 nesy terminato in: {utils.time_delta_now(t0_b0_s)}")
+
+    t0_b3_ns = time.perf_counter() 
     rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
+    print(f"Training modello b3 neural terminato in: {utils.time_delta_now(t0_b3_ns)}")
+
+    t0_b3_s = time.perf_counter() 
+    rb3_train_s = b3_s.train(n_epochs,test_loader_singledigit_b3)
+    print(f"Training modello b3 nesy terminato in: {utils.time_delta_now(t0_b3_s)}")
+    
+    
+    
     training_results = {
         "MNISTNet_basic": {
             "train_nesy": rb_train_s,

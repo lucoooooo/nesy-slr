@@ -8,6 +8,7 @@ import os
 from datetime import datetime
 import pandas as pd
 import utils 
+import time
 import json
 
 def compGraph(losses, accuracy, modelname, data_dir):
@@ -163,12 +164,31 @@ if no_train is True:
 
 else:
     print("Inizio training dei modelli")
+    
+    t0_b_s = time.perf_counter() 
     rb_train_s = trainer_Sym_basic.train(n_epochs)
+    print(f"Training modello basic nesy terminato in: {utils.time_delta_now(t0_b_s)}")
+
+    t0_b_ns = time.perf_counter() 
     rb_train_ns = trainer_NoSym_basic.train(n_epochs)
+    print(f"Training modello basic neural terminato in: {utils.time_delta_now(t0_b_ns)}")
+
+    t0_b0_ns = time.perf_counter() 
     rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
+    print(f"Training modello b0 neural terminato in: {utils.time_delta_now(t0_b0_ns)}")
+
+    t0_b0_s = time.perf_counter() 
     rb0_train_s = trainer_Sym_b0.train(n_epochs)
+    print(f"Training modello b0 nesy terminato in: {utils.time_delta_now(t0_b0_s)}")
+
+    t0_b3_ns = time.perf_counter() 
     rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
+    print(f"Training modello b3 neural terminato in: {utils.time_delta_now(t0_b3_ns)}")
+
+    t0_b3_s = time.perf_counter() 
     rb3_train_s = trainer_Sym_b3.train(n_epochs)
+    print(f"Training modello b3 nesy terminato in: {utils.time_delta_now(t0_b3_s)}")
+    
     training_results = {
         "MNISTNet_basic": {
             "train_nesy":  rb_train_s,

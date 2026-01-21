@@ -25,6 +25,21 @@ from deepproblog.train import TrainObject
 from deepproblog.engines import ExactEngine, ApproximateEngine
 from deepproblog.evaluate import get_confusion_matrix
 from deepproblog.dataset import DataLoader as DL
+import time
+
+def time_delta_now(t_start: float, simple_format=True) -> str:
+    a = t_start
+    b = time.perf_counter() 
+    c = b - a  
+    days = int(c // 86400)
+    hours = int(c // 3600 % 24)
+    minutes = int(c // 60 % 60)
+    seconds = int(c % 60)
+    millisecs = round(c % 1 * 1000)
+    if simple_format:
+        return f"{hours}h:{minutes}m:{seconds}s"
+
+    return f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds, {millisecs} milliseconds", c
 
 
 mnistbasic_img_transform = torchvision.transforms.Compose([

@@ -1,3 +1,4 @@
+import time
 import torch
 import argparse
 import matplotlib.pyplot as plt #
@@ -162,8 +163,8 @@ trainer_NoSym_b3 = utils.Trainer_NoSym(train_loader_b3_ns, test_loader_b3_ns, mo
 
 #trainer sym
 trainer_Sym_basic = utils.Trainer_Sym(train_set_b_s, train_loader_b_ns, test_loader_b_ns, model_dir,learning_rate,batch_size_train,  basic_sym, method,device, max_size)
-#trainer_Sym_b0 = utils.Trainer_Sym(train_set_b0_s, train_loader_b0_ns, test_loader_b0_ns, model_dir,learning_rate,batch_size_train, b0_sym, method,device, max_size)
-#trainer_Sym_b3 = utils.Trainer_Sym(train_set_b3_s, train_loader_b3_ns, test_loader_b3_ns, model_dir,learning_rate,batch_size_train,  b3_sym, method,device,max_size)
+trainer_Sym_b0 = utils.Trainer_Sym(train_set_b0_s, train_loader_b0_ns, test_loader_b0_ns, model_dir,learning_rate,batch_size_train, b0_sym, method,device, max_size)
+trainer_Sym_b3 = utils.Trainer_Sym(train_set_b3_s, train_loader_b3_ns, test_loader_b3_ns, model_dir,learning_rate,batch_size_train,  b3_sym, method,device,max_size)
 
 #training
 if no_train is True:
@@ -172,12 +173,30 @@ if no_train is True:
         training_results = json.load(f)
 else:
     print("Inizio training dei modelli")
+    
+    t0_b_s = time.perf_counter() 
     rb_train_s = trainer_Sym_basic.train(n_epochs)
+    print(f"Training modello basic nesy terminato in: {utils.time_delta_now(t0_b_s)}")
+
+    t0_b_ns = time.perf_counter() 
     rb_train_ns = trainer_NoSym_basic.train(n_epochs)
+    print(f"Training modello basic neural terminato in: {utils.time_delta_now(t0_b_ns)}")
+
+    t0_b0_ns = time.perf_counter() 
     rb0_train_ns = trainer_NoSym_b0.train(n_epochs)
+    print(f"Training modello b0 neural terminato in: {utils.time_delta_now(t0_b0_ns)}")
+
+    t0_b0_s = time.perf_counter() 
     rb0_train_s = trainer_Sym_b0.train(n_epochs)
+    print(f"Training modello b0 nesy terminato in: {utils.time_delta_now(t0_b0_s)}")
+
+    t0_b3_ns = time.perf_counter() 
     rb3_train_ns = trainer_NoSym_b3.train(n_epochs)
+    print(f"Training modello b3 neural terminato in: {utils.time_delta_now(t0_b3_ns)}")
+
+    t0_b3_s = time.perf_counter() 
     rb3_train_s = trainer_Sym_b3.train(n_epochs)
+    print(f"Training modello b3 nesy terminato in: {utils.time_delta_now(t0_b3_s)}")
     
     training_results = {
         "MNISTNet_basic": {

@@ -14,14 +14,14 @@ from abc import ABC, abstractmethod
 from slash import SLASH
 import time
 
-def time_delta_now(t_start: float, simple_format=False) -> str:
+def time_delta_now(t_start: float, simple_format=True) -> str:
     a = t_start
-    b = time.time() 
+    b = time.perf_counter() 
     c = b - a  
-    days = round(c // 86400)
-    hours = round(c // 3600 % 24)
-    minutes = round(c // 60 % 60)
-    seconds = round(c % 60)
+    days = int(c // 86400)
+    hours = int(c // 3600 % 24)
+    minutes = int(c // 60 % 60)
+    seconds = int(c % 60)
     millisecs = round(c % 1 * 1000)
     if simple_format:
         return f"{hours}h:{minutes}m:{seconds}s"
