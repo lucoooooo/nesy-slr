@@ -241,7 +241,7 @@ def enforce_sum(img1, img2, **kwargs):
     return img1 + img2 == target
 
 class Trainer_Sym():
-    def __init__(self, train_loader, test_loader, model_dir,learning_rate, model : MNISTSum2Net_Sym, device, lambda_pylon=1, lambda_nn=1):
+    def __init__(self, train_loader, test_loader, model_dir,learning_rate, model : MNISTSum2Net_Sym, device, lambda_pylon=1, lambda_nn=0):
         self.model_dir = model_dir
         self.network = model
         self.optimizer = optim.Adam(self.network.parameters(), lr=learning_rate)
