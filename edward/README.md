@@ -49,7 +49,8 @@ Una volta avviato il container Docker, per riprodurre i risultati basta eseguire
 **D. Tran, M. D. Hoffman, D. Moore, C. Suter, S. Vasudevan, A. Radul, M. Johnson, and R. A. Saurous** (2018).
 "Simple, Distributed, and Accelerated Probabilistic Programming".
 Neural Information Processing Systems (NeurIPS).
-[Link EDWARD2](https://arxiv.org/abs/1811.02091) / [Link repo](https://github.com/google/edward2/)
+[Link EDWARD2](https://arxiv.org/abs/1811.02091) / [Link repo](https://github.com/google/edward2/) 
+
 **D. Tran, M. D. Hoffman, R. A. Saurous, E. Brevdo, K. Murphy, and D. M. Blei** (2017).
 "Deep probabilistic programming".
 International Conference on Learning Representations (ICLR).
