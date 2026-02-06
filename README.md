@@ -17,6 +17,7 @@ Il progetto prende in esame le seguenti librerie:
 * **PYLON** 
 * **Scallop** 
 * **SLASH** 
+* **EDWARD**
 
 ## Struttura del Repository
 
@@ -45,6 +46,7 @@ Nel README.md di ogni sottocartella è presente una gruida all'avvio del contain
 ├── pylon/ ...
 ├── scallop/ ...
 ├── slash/ ...
+├── edward/ ...
 ├── .gitignore
 └── README.md
 ```
@@ -91,7 +93,14 @@ Nel README.md di ogni sottocartella è presente una gruida all'avvio del contain
    Journal of Artificial Intelligence Research.  
    [Link al paper](https://www.scopus.com/inward/record.uri?eid=2-s2.0-85178997369&doi=10.1613%2fJAIR.1.15027&partnerID=40&md5=7d949c308cfce51ed99607c371aaab7c) /
    [Link al repo](https://github.com/ml-research/SLASH)
-
+8. **D. Tran, M. D. Hoffman, D. Moore, C. Suter, S. Vasudevan, A. Radul, M. Johnson, and R. A. Saurous** (2018).
+   "Simple, Distributed, and Accelerated Probabilistic Programming".
+   Neural Information Processing Systems (NeurIPS).
+   **D. Tran, M. D. Hoffman, R. A. Saurous, E. Brevdo, K. Murphy, and D. M. Blei** (2017).
+   "Deep probabilistic programming".
+   International Conference on Learning Representations (ICLR).
+   [Link EDWARD](https://arxiv.org/abs/1701.03757) / [Link repo](https://github.com/blei-lab/edward)
+   [Link EDWARD2](https://arxiv.org/abs/1811.02091) / [Link repo](https://github.com/google/edward2/)
 
 # Autore
 
