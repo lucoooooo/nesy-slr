@@ -96,11 +96,12 @@ Nel README.md di ogni sottocartella è presente una gruida all'avvio del contain
 8. **D. Tran, M. D. Hoffman, D. Moore, C. Suter, S. Vasudevan, A. Radul, M. Johnson, and R. A. Saurous** (2018).
    "Simple, Distributed, and Accelerated Probabilistic Programming".
    Neural Information Processing Systems (NeurIPS).
+   [Link EDWARD2](https://arxiv.org/abs/1811.02091) / [Link repo](https://github.com/google/edward2/)
    **D. Tran, M. D. Hoffman, R. A. Saurous, E. Brevdo, K. Murphy, and D. M. Blei** (2017).
    "Deep probabilistic programming".
    International Conference on Learning Representations (ICLR).
    [Link EDWARD](https://arxiv.org/abs/1701.03757) / [Link repo](https://github.com/blei-lab/edward)
-   [Link EDWARD2](https://arxiv.org/abs/1811.02091) / [Link repo](https://github.com/google/edward2/)
+   
 
 # Autore
 
