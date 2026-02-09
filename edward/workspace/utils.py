@@ -7,10 +7,13 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, models, optimizers, losses
 from tensorflow.keras.applications import EfficientNetB0, EfficientNetB3
+import tensorflow_probability as tfp
 import numpy as np
 from tqdm import tqdm
-import edward2 as ed
+from edward2 import tensorflow as ed
 import time
+
+tfd = tfp.distributions
 
 def time_delta_now(t_start: float, simple_format=True) -> str:
     a = t_start
@@ -122,13 +125,13 @@ class MNISTNet_basic(keras.Model):
     def __init__(self, num_classes=10):
         super(MNISTNet_basic, self).__init__()
         self.modelname = "basic"
-        self.conv1 = layers.Conv2D(6, kernel_size=5, activation='relu')
+        self.conv1 = layers.Conv2D(6, kernel_size=5, activation='relu', kernel_initializer='he_uniform') #init pesi come pytorch
         self.pool = layers.MaxPooling2D(pool_size=2)
-        self.conv2 = layers.Conv2D(16, kernel_size=5, activation='relu')
+        self.conv2 = layers.Conv2D(16, kernel_size=5, activation='relu', kernel_initializer='he_uniform')
         self.flatten = layers.Flatten()
-        self.fc1 = layers.Dense(120, activation='relu')
-        self.fc2 = layers.Dense(84, activation='relu')
-        self.fc3 = layers.Dense(num_classes)
+        self.fc1 = layers.Dense(120, activation='relu',kernel_initializer='he_uniform')
+        self.fc2 = layers.Dense(84, activation='relu',kernel_initializer='he_uniform')
+        self.fc3 = layers.Dense(num_classes,kernel_initializer='he_uniform')
         self.dropout = layers.Dropout(0.5)
 
     def call(self, x):
@@ -159,7 +162,7 @@ class MNISTNet_Efficient(keras.Model):
             base_model,
             layers.GlobalAveragePooling2D()
         ])
-        self.classifier = layers.Dense(N)
+        self.classifier = layers.Dense(N, kernel_initializer='he_uniform')
 
     def call(self, x):
         x = self.feature_extractor(x)
@@ -177,8 +180,8 @@ class MNISTSum2Net_nesy(keras.Model):
         a_feat = self.mnist_net(a_imgs, training=training)
         b_feat = self.mnist_net(b_imgs, training=training)
         
-        d1 = ed.Categorical(logits=a_feat, name="digit_1")
-        d2 = ed.Categorical(logits=b_feat, name="digit_2")
+        d1 = ed.RandomVariable(tfd.Categorical(logits=a_feat, name="digit_1"))
+        d2 = ed.RandomVariable(tfd.Categorical(logits=b_feat, name="digit_2"))
 
         return d1,d2
     
@@ -207,7 +210,7 @@ class MNISTSum2Net_nesy(keras.Model):
     
         return sum_prob
     
-    #usando variabili discreti serve ottenere una loss differenziabile => come per pytorch uso la somma convoluttiva
+    #usando variabili discreti serve ottenere una loss differenziabile per fare backprop=> come per pytorch uso la somma convoluttiva
     def diff_loss(self, y_true, d1, d2, loss_fn):
         d1probs = d1.distribution.probs_parameter()
         d2probs = d2.distribution.probs_parameter()
@@ -221,16 +224,16 @@ class MNISTSum2Net(keras.Model):
     def __init__(self, base_model):
         super(MNISTSum2Net, self).__init__()
         self.mnist_net = base_model
-        self.sum_classifier = layers.Dense(19)
+        self.sum_classifier = layers.Dense(19, kernel_initializer='he_uniform')
 
-    def call(self, inputs):
+    def call(self, inputs, training=None):
         (a_imgs, b_imgs) = inputs
 
-        a_feat = self.mnist_net(a_imgs)
-        b_feat = self.mnist_net(b_imgs)
+        a_feat = self.mnist_net(a_imgs, training)
+        b_feat = self.mnist_net(b_imgs, training)
         
         combined_feature = layers.concatenate([a_feat, b_feat], axis=1)
-        sum_logits = self.sum_classifier(combined_feature)
+        sum_logits = self.sum_classifier(combined_feature, training)
         
         sum_probs = tf.nn.softmax(sum_logits)
         
@@ -243,7 +246,7 @@ class Trainer_NoSym:
     def __init__(self, train_loader, test_loader, model_dir, learning_rate, model: MNISTSum2Net):
         self.model_dir = model_dir
         self.network = model
-        self.optimizer = optimizers.Adam(learning_rate=learning_rate)
+        self.optimizer = optimizers.Adam(learning_rate=learning_rate,epsilon=1e-8)
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.loss_fn = losses.SparseCategoricalCrossentropy(from_logits=False) 
@@ -335,7 +338,7 @@ class Trainer_Sym:
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.model_dir = model_dir
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate, epsilon=1e-8) #metto epsilon come il default di pytorch
         self.network = model 
         self.loss_fn = losses.SparseCategoricalCrossentropy(from_logits=False) 
 

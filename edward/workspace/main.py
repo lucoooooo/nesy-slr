@@ -65,10 +65,10 @@ def load_all_models(model_dir, models):
         elif "basic" in filename: key = "basic_nesy" if is_sym else "basic_neural"
         else: continue 
         
-        dummy_in = (tf.zeros((1, 28, 28, 1)), tf.zeros((1, 28, 28, 1)))
+        input_ex = (tf.zeros((1, 28, 28, 1)), tf.zeros((1, 28, 28, 1)))
         if "b0" in key or "b3" in key: 
-            dummy_in = (tf.zeros((1, 28, 28, 3)), tf.zeros((1, 28, 28, 3)))
-        _ = models[key](dummy_in) #per creare i pesi a vuoto in modo da farli effettivamente caricare prima di ricevere dati
+            input_ex = (tf.zeros((1, 64, 64, 3)), tf.zeros((1, 64, 64, 3)))
+        _ = models[key](input_ex, training=False) #per creare i pesi a vuoto in modo da farli effettivamente caricare prima di ricevere dati
         models[key].load_weights(path)
 
 parser = argparse.ArgumentParser()
