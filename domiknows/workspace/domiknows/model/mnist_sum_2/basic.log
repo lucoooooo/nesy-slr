@@ -1,0 +1,267 @@
+--------------------------------------------------
+Modello: basic | Dati: 1000 con LR: 0.0001
+--------------------------------------------------
+Removed old run directory: logs/previous/run_2026-02-12_19-43-05
+Log file for dataNode is in: /workspace/domiknows/logs/datanode.log
+Removed empty log file: logs/datanode.log
+Log file for dataNodeBuilder is in: /workspace/domiknows/logs/datanode.log
+0 - [LC4(andL)]
+1 - [LC6(andL), LC7(andL)]
+2 - [LC10(andL), LC11(andL), LC12(andL)]
+3 - [LC15(andL), LC16(andL), LC17(andL), LC18(andL)]
+4 - [LC21(andL), LC22(andL), LC23(andL), LC24(andL), LC25(andL)]
+5 - [LC28(andL), LC29(andL), LC30(andL), LC31(andL), LC32(andL), LC33(andL)]
+6 - [LC36(andL), LC37(andL), LC38(andL), LC39(andL), LC40(andL), LC41(andL), LC42(andL)]
+7 - [LC45(andL), LC46(andL), LC47(andL), LC48(andL), LC49(andL), LC50(andL), LC51(andL), LC52(andL)]
+8 - [LC55(andL), LC56(andL), LC57(andL), LC58(andL), LC59(andL), LC60(andL), LC61(andL), LC62(andL), LC63(andL)]
+9 - [LC66(andL), LC67(andL), LC68(andL), LC69(andL), LC70(andL), LC71(andL), LC72(andL), LC73(andL), LC74(andL), LC75(andL)]
+10 - [LC78(andL), LC79(andL), LC80(andL), LC81(andL), LC82(andL), LC83(andL), LC84(andL), LC85(andL), LC86(andL)]
+11 - [LC89(andL), LC90(andL), LC91(andL), LC92(andL), LC93(andL), LC94(andL), LC95(andL), LC96(andL)]
+12 - [LC99(andL), LC100(andL), LC101(andL), LC102(andL), LC103(andL), LC104(andL), LC105(andL)]
+13 - [LC108(andL), LC109(andL), LC110(andL), LC111(andL), LC112(andL), LC113(andL)]
+14 - [LC116(andL), LC117(andL), LC118(andL), LC119(andL), LC120(andL)]
+15 - [LC123(andL), LC124(andL), LC125(andL), LC126(andL)]
+16 - [LC129(andL), LC130(andL), LC131(andL)]
+17 - [LC134(andL), LC135(andL)]
+18 - [LC138(andL)]
+Namespace(method='PrimalDual', num_train=1000, log='None', epochs=20, model='basic', modeldir='tests/final_1000/1000', datadir='./data', lr=0.0001, seed=123, batch_size=1, warmup=0)
+Log file for lossModelOperations is in: /workspace/domiknows/logs/lossmodel_operations.log
+Log file for primalDualModelOperations is in: /workspace/domiknows/logs/primaldual_model_operations.log
+initializing optimizer
+INFO:domiknows.program.program:Epoch: 1
+INFO:domiknows.program.program:Training:
+Epoch 1 Training:   0%|                                                                                       | 0/1000 [00:00<?, ?it/s]Log file for domiknows.utils is in: /workspace/domiknows/logs/regrTimer.log
+Log file for ilpOntSolver is in: /workspace/domiknows/logs/ilpOntSolver.log
+Log file for lcLossCountOperations is in: /workspace/domiknows/logs/lc_loss_count_operations.log
+Epoch 1 Training:   3%|██▍                                                                           | 32/1000 [00:03<01:28, 10.96it/s]Epoch 1 Training: 100%|████████████████████████████████████████████████████████████████████████████| 1000/1000 [01:36<00:00, 10.32it/s]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:05<00:00, 170.98it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC:       0.297
+SOMMA:   0.112
+INFO:domiknows.program.program:Epoch: 2
+INFO:domiknows.program.program:Training:
+Epoch 2 Training: 100%|████████████████████████████████████████████████████████████████████████████| 1000/1000 [01:35<00:00, 10.45it/s]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:04<00:00, 228.44it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC:       0.306
+SOMMA:   0.124
+INFO:domiknows.program.program:Epoch: 3
+INFO:domiknows.program.program:Training:
+Epoch 3 Training: 100%|████████████████████████████████████████████████████████████████████████████| 1000/1000 [01:39<00:00, 10.02it/s]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:06<00:00, 154.94it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC:       0.473
+SOMMA:   0.239
+INFO:domiknows.program.program:Epoch: 4
+INFO:domiknows.program.program:Training:
+Epoch 4 Training: 100%|████████████████████████████████████████████████████████████████████████████| 1000/1000 [01:38<00:00, 10.20it/s]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:06<00:00, 161.59it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC:       0.569
+SOMMA:   0.352
+INFO:domiknows.program.program:Epoch: 5
+INFO:domiknows.program.program:Training:
+Epoch 5 Training: 100%|████████████████████████████████████████████████████████████████████████████| 1000/1000 [01:41<00:00,  9.81it/s]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:06<00:00, 160.36it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC:       0.6105
+SOMMA:   0.399
+INFO:domiknows.program.program:Epoch: 6
+INFO:domiknows.program.program:Training:
+Epoch 6 Training: 100%|████████████████████████████████████████████████████████████████████████████| 1000/1000 [01:44<00:00,  9.61it/s]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:07<00:00, 141.77it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC:       0.707
+SOMMA:   0.524
+INFO:domiknows.program.program:Epoch: 7
+INFO:domiknows.program.program:Training:
+Epoch 7 Training: 100%|████████████████████████████████████████████████████████████████████████████| 1000/1000 [01:45<00:00,  9.48it/s]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:07<00:00, 142.08it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC:       0.7175
+SOMMA:   0.536
+INFO:domiknows.program.program:Epoch: 8
+INFO:domiknows.program.program:Training:
+Epoch 8 Training: 100%|████████████████████████████████████████████████████████████████████████████| 1000/1000 [01:45<00:00,  9.48it/s]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:08<00:00, 123.83it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC:       0.714
+SOMMA:   0.527
+INFO:domiknows.program.program:Epoch: 9
+INFO:domiknows.program.program:Training:
+Epoch 9 Training: 100%|████████████████████████████████████████████████████████████████████████████| 1000/1000 [01:45<00:00,  9.45it/s]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:07<00:00, 126.52it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC:       0.7495
+SOMMA:   0.581
+INFO:domiknows.program.program:Epoch: 10
+INFO:domiknows.program.program:Training:
+Epoch 10 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:44<00:00,  9.54it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:10<00:00, 92.49it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC:       0.753
+SOMMA:   0.583
+INFO:domiknows.program.program:Epoch: 11
+INFO:domiknows.program.program:Training:
+Epoch 11 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:46<00:00,  9.39it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:10<00:00, 96.44it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC:       0.824
+SOMMA:   0.686
+INFO:domiknows.program.program:Epoch: 12
+INFO:domiknows.program.program:Training:
+Epoch 12 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:44<00:00,  9.56it/s]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:09<00:00, 100.07it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC:       0.8345
+SOMMA:   0.703
+INFO:domiknows.program.program:Epoch: 13
+INFO:domiknows.program.program:Training:
+Epoch 13 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:56<00:00,  8.61it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:11<00:00, 84.15it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC:       0.8465
+SOMMA:   0.721
+INFO:domiknows.program.program:Epoch: 14
+INFO:domiknows.program.program:Training:
+Epoch 14 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:43<00:00,  9.70it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:12<00:00, 82.26it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC:       0.866
+SOMMA:   0.753
+INFO:domiknows.program.program:Epoch: 15
+INFO:domiknows.program.program:Training:
+Epoch 15 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:57<00:00,  8.53it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:12<00:00, 78.08it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC:       0.895
+SOMMA:   0.804
+INFO:domiknows.program.program:Epoch: 16
+INFO:domiknows.program.program:Training:
+Epoch 16 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:50<00:00,  9.08it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:13<00:00, 73.40it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC:       0.9265
+SOMMA:   0.856
+INFO:domiknows.program.program:Epoch: 17
+INFO:domiknows.program.program:Training:
+Epoch 17 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:53<00:00,  8.80it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:14<00:00, 67.17it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC:       0.926
+SOMMA:   0.855
+INFO:domiknows.program.program:Epoch: 18
+INFO:domiknows.program.program:Training:
+Epoch 18 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:47<00:00,  9.27it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:14<00:00, 69.52it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC:       0.9415
+SOMMA:   0.886
+INFO:domiknows.program.program:Epoch: 19
+INFO:domiknows.program.program:Training:
+Epoch 19 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:43<00:00,  9.62it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:16<00:00, 60.55it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC:       0.9435
+SOMMA:   0.889
+INFO:domiknows.program.program:Epoch: 20
+INFO:domiknows.program.program:Training:
+Epoch 20 Training: 100%|███████████████████████████████████████████████████████████████████████████| 1000/1000 [01:43<00:00,  9.63it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:17<00:00, 58.46it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC:       0.946
+SOMMA:   0.894
+Training modello basic nesy terminato in: 0h:38m:29s
+--------------------------------------------------
+COMPLETATO!!!!! -> Modello: basic | Dati: 1000 con LR: 0.0001
+--------------------------------------------------

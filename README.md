@@ -18,6 +18,7 @@ Il progetto prende in esame le seguenti librerie:
 * **Scallop** 
 * **SLASH** 
 * **EDWARD**
+* **DomiKnowS**
 
 ## Struttura del Repository
 
@@ -47,6 +48,7 @@ Nel README.md di ogni sottocartella è presente una gruida all'avvio del contain
 ├── scallop/ ...
 ├── slash/ ...
 ├── edward/ ...
+├── domiknows/ ...
 ├── .gitignore
 └── README.md
 ```
@@ -102,7 +104,10 @@ Nel README.md di ogni sottocartella è presente una gruida all'avvio del contain
    "Deep probabilistic programming".
    International Conference on Learning Representations (ICLR).
    [Link al paper](https://arxiv.org/abs/1701.03757) / [Link repo EDWARD](https://github.com/blei-lab/edward)
-   
+9. **Rajaby Faghihi, H., Guo, Q., Uszok, A., Nafar, A., Raisi, E., & Kordjamshidi, P.**  (2021). 
+   *DomiKnowS: A Library for Integration of Symbolic Domain Knowledge in Deep Learning*. 
+   In Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing: System Demonstrations. 
+   Association for Computational Linguistics. [Link al paper](https://aclanthology.org/2021.emnlp-demo.27) / [Link al repo](https://github.com/HLR/DomiKnowS)
 
 # Autore
 

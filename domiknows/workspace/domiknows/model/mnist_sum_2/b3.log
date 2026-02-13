@@ -1,0 +1,187 @@
+--------------------------------------------------
+Modello: b3 | Dati: 1000 con LR: 0.0001
+--------------------------------------------------
+0.0005
+INFO:numexpr.utils:NumExpr defaulting to 8 threads.
+Log file for dataNode is in: /content/drive/MyDrive/domiknows/logs/datanode.log
+Removed empty log file: logs/datanode.log
+Log file for dataNodeBuilder is in: /content/drive/MyDrive/domiknows/logs/datanode.log
+0 - [LC4(andL)]
+1 - [LC6(andL), LC7(andL)]
+2 - [LC10(andL), LC11(andL), LC12(andL)]
+3 - [LC15(andL), LC16(andL), LC17(andL), LC18(andL)]
+4 - [LC21(andL), LC22(andL), LC23(andL), LC24(andL), LC25(andL)]
+5 - [LC28(andL), LC29(andL), LC30(andL), LC31(andL), LC32(andL), LC33(andL)]
+6 - [LC36(andL), LC37(andL), LC38(andL), LC39(andL), LC40(andL), LC41(andL), LC42(andL)]
+7 - [LC45(andL), LC46(andL), LC47(andL), LC48(andL), LC49(andL), LC50(andL), LC51(andL), LC52(andL)]
+8 - [LC55(andL), LC56(andL), LC57(andL), LC58(andL), LC59(andL), LC60(andL), LC61(andL), LC62(andL), LC63(andL)]
+9 - [LC66(andL), LC67(andL), LC68(andL), LC69(andL), LC70(andL), LC71(andL), LC72(andL), LC73(andL), LC74(andL), LC75(andL)]
+10 - [LC78(andL), LC79(andL), LC80(andL), LC81(andL), LC82(andL), LC83(andL), LC84(andL), LC85(andL), LC86(andL)]
+11 - [LC89(andL), LC90(andL), LC91(andL), LC92(andL), LC93(andL), LC94(andL), LC95(andL), LC96(andL)]
+12 - [LC99(andL), LC100(andL), LC101(andL), LC102(andL), LC103(andL), LC104(andL), LC105(andL)]
+13 - [LC108(andL), LC109(andL), LC110(andL), LC111(andL), LC112(andL), LC113(andL)]
+14 - [LC116(andL), LC117(andL), LC118(andL), LC119(andL), LC120(andL)]
+15 - [LC123(andL), LC124(andL), LC125(andL), LC126(andL)]
+16 - [LC129(andL), LC130(andL), LC131(andL)]
+17 - [LC134(andL), LC135(andL)]
+18 - [LC138(andL)]
+Namespace(method='PrimalDual', num_train=1000, log='None', epochs=20, model='b3', modeldir='tests/final_1000/1000', datadir='./data', lr=0.0001, seed=123, batch_size=1, warmup=0)
+INFO:timm.models._builder:Loading pretrained weights from Hugging Face hub (timm/efficientnet_b3.ra2_in1k)
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/timm/efficientnet_b3.ra2_in1k/resolve/main/model.safetensors "HTTP/1.1 302 Found"
+INFO:timm.models._hub:[timm/efficientnet_b3.ra2_in1k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+Log file for lossModelOperations is in: /content/drive/MyDrive/domiknows/logs/lossmodel_operations.log
+Log file for primalDualModelOperations is in: /content/drive/MyDrive/domiknows/logs/primaldual_model_operations.log
+initializing optimizer
+INFO:domiknows.program.program:Epoch: 1
+INFO:domiknows.program.program:Training:
+Epoch 1 Training:   0% 0/1000 [00:00<?, ?it/s]Log file for domiknows.utils is in: /content/drive/MyDrive/domiknows/logs/regrTimer.log
+Log file for ilpOntSolver is in: /content/drive/MyDrive/domiknows/logs/ilpOntSolver.log
+Log file for lcLossCountOperations is in: /content/drive/MyDrive/domiknows/logs/lc_loss_count_operations.log
+Epoch 1 Training: 100% 1000/1000 [06:23<00:00,  2.61it/s]
+100% 1000/1000 [00:44<00:00, 22.52it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.1585
+SOMMA: 	 0.062
+INFO:domiknows.program.program:Epoch: 2
+INFO:domiknows.program.program:Training:
+Epoch 2 Training: 100% 1000/1000 [06:40<00:00,  2.50it/s]
+100% 1000/1000 [00:46<00:00, 21.34it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.1105
+SOMMA: 	 0.062
+INFO:domiknows.program.program:Epoch: 3
+INFO:domiknows.program.program:Training:
+Epoch 3 Training: 100% 1000/1000 [06:42<00:00,  2.49it/s]
+100% 1000/1000 [00:47<00:00, 21.17it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.154
+SOMMA: 	 0.083
+INFO:domiknows.program.program:Epoch: 4
+INFO:domiknows.program.program:Training:
+Epoch 4 Training: 100% 1000/1000 [06:25<00:00,  2.59it/s]
+100% 1000/1000 [00:48<00:00, 20.50it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.201
+SOMMA: 	 0.079
+INFO:domiknows.program.program:Epoch: 5
+INFO:domiknows.program.program:Training:
+Epoch 5 Training: 100% 1000/1000 [06:54<00:00,  2.41it/s]
+100% 1000/1000 [00:51<00:00, 19.25it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.0925
+SOMMA: 	 0.066
+INFO:domiknows.program.program:Epoch: 6
+INFO:domiknows.program.program:Training:
+Epoch 6 Training: 100% 1000/1000 [06:35<00:00,  2.53it/s]
+100% 1000/1000 [00:52<00:00, 19.07it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.202
+SOMMA: 	 0.086
+INFO:domiknows.program.program:Epoch: 7
+INFO:domiknows.program.program:Training:
+Epoch 7 Training: 100% 1000/1000 [06:49<00:00,  2.44it/s]
+100% 1000/1000 [00:53<00:00, 18.66it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.1985
+SOMMA: 	 0.089
+INFO:domiknows.program.program:Epoch: 8
+INFO:domiknows.program.program:Training:
+Epoch 8 Training: 100% 1000/1000 [06:50<00:00,  2.44it/s]
+100% 1000/1000 [00:57<00:00, 17.41it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.166
+SOMMA: 	 0.079
+INFO:domiknows.program.program:Epoch: 9
+INFO:domiknows.program.program:Training:
+Epoch 9 Training: 100% 1000/1000 [06:39<00:00,  2.50it/s]
+100% 1000/1000 [00:57<00:00, 17.26it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.265
+SOMMA: 	 0.109
+INFO:domiknows.program.program:Epoch: 10
+INFO:domiknows.program.program:Training:
+Epoch 10 Training: 100% 1000/1000 [07:04<00:00,  2.35it/s]
+100% 1000/1000 [00:59<00:00, 16.75it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.255
+SOMMA: 	 0.112
+INFO:domiknows.program.program:Epoch: 11
+INFO:domiknows.program.program:Training:
+Epoch 11 Training: 100% 1000/1000 [06:57<00:00,  2.39it/s]
+100% 1000/1000 [01:00<00:00, 16.58it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.2765
+SOMMA: 	 0.103
+INFO:domiknows.program.program:Epoch: 12
+INFO:domiknows.program.program:Training:
+Epoch 12 Training: 100% 1000/1000 [07:06<00:00,  2.34it/s]
+100% 1000/1000 [01:02<00:00, 15.91it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.289
+SOMMA: 	 0.113
+INFO:domiknows.program.program:Epoch: 13
+INFO:domiknows.program.program:Training:
+Epoch 13 Training: 100% 1000/1000 [06:57<00:00,  2.40it/s]
+100% 1000/1000 [01:06<00:00, 15.06it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.372
+SOMMA: 	 0.155
+INFO:domiknows.program.program:Epoch: 14
+INFO:domiknows.program.program:Training:
+Epoch 14 Training: 100% 1000/1000 [07:18<00:00,  2.28it/s]
+100% 1000/1000 [01:07<00:00, 14.83it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.418
+SOMMA: 	 0.207
+INFO:domiknows.program.program:Epoch: 15
+INFO:domiknows.program.program:Training:
+Epoch 15 Training: 100% 1000/1000 [06:59<00:00,  2.38it/s]
+100% 1000/1000 [01:12<00:00, 13.87it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.3275
+SOMMA: 	 0.136
+INFO:domiknows.program.program:Epoch: 16
+INFO:domiknows.program.program:Training:
+Epoch 16 Training: 100% 1000/1000 [07:00<00:00,  2.38it/s]
+100% 1000/1000 [01:10<00:00, 14.15it/s]
+============== RESULTS FOR: /local/argmax ==============
+/usr/local/lib/python3.12/dist-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/dist-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/usr/local/lib/python3.12/dist-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+DIGIT ACC: 	 0.3645
+SOMMA: 	 0.133
+INFO:domiknows.program.program:Epoch: 17
+INFO:domiknows.program.program:Training:
+Epoch 17 Training: 100% 1000/1000 [07:31<00:00,  2.22it/s]
+100% 1000/1000 [01:14<00:00, 13.44it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.495
+SOMMA: 	 0.262
+INFO:domiknows.program.program:Epoch: 18
+INFO:domiknows.program.program:Training:
+Epoch 18 Training: 100% 1000/1000 [07:18<00:00,  2.28it/s]
+100% 1000/1000 [01:15<00:00, 13.23it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.35
+SOMMA: 	 0.151
+INFO:domiknows.program.program:Epoch: 19
+INFO:domiknows.program.program:Training:
+Epoch 19 Training: 100% 1000/1000 [07:29<00:00,  2.22it/s]
+100% 1000/1000 [01:17<00:00, 12.86it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.346
+SOMMA: 	 0.151
+INFO:domiknows.program.program:Epoch: 20
+INFO:domiknows.program.program:Training:
+Epoch 20 Training: 100% 1000/1000 [07:16<00:00,  2.29it/s]
+100% 1000/1000 [01:20<00:00, 12.41it/s]
+============== RESULTS FOR: /local/argmax ==============
+DIGIT ACC: 	 0.511
+SOMMA: 	 0.29
+Training modello b3 nesy terminato in: 2h:39m:30s
+--------------------------------------------------
+COMPLETATO!!!!! -> Modello: b3 | Dati: 1000 con LR: 0.0001
+--------------------------------------------------

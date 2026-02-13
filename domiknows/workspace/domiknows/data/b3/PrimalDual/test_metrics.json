@@ -1,0 +1,9 @@
+{
+  "/local/argmax": {
+    "accuracy": 0.312,
+    "single-digit accuracy": [
+      0.5398,
+      0.5398
+    ]
+  }
+}
